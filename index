@@ -1,22 +1,48 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>My First Vibe Website</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Night City Interactive Map</title>
   <style>
-    body {
-      background: linear-gradient(to right, #ff9a9e, #fad0c4);
-      font-family: 'Arial', sans-serif;
-      text-align: center;
-      padding: 50px;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    h1 {
-      font-size: 3em;
-      color: #fff;
+
+    body, html {
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Orbitron', sans-serif;
+      background-color: #000;
+    }
+
+    .map-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: url('night-city-map.webp') no-repeat center center;
+      background-size: cover;
+    }
+
+    .zone {
+      position: absolute;
+      border: 2px solid rgba(0, 255, 255, 0.5);
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .zone:hover {
+      border-color: #00ffff;
+      background-color: rgba(0, 255, 255, 0.1);
     }
   </style>
 </head>
 <body>
-  <h1>Welcome to My Vibe Website ✨</h1>
-  <p>Made with love and GitHub Pages 💻</p>
+  <div class="map-container">
+    <!-- Example clickable zone -->
+    <div class="zone" style="top: 30%; left: 40%; width: 100px; height: 100px;" title="Watson"></div>
+  </div>
 </body>
 </html>
