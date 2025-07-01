@@ -4,15 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Night City Interactive Map</title>
-  <style>
-    body {
-      background-color: red; /* test color */
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="map-container">
-    <!-- content -->
+    <!-- Example clickable zone -->
+    <div class="zone" style="top: 30%; left: 40%; width: 100px; height: 100px;" title="Watson"></div>
   </div>
 </body>
 </html>
+
