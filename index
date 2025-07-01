@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Night City Interactive Map</title>
+  <title>Test Page</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="map-container">
-    <!-- You can add zones here later -->
+    <h1>Hello, Night City!</h1>
   </div>
 </body>
 </html>
-
 
