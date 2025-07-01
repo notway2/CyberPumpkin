@@ -5,44 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Night City Interactive Map</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body, html {
-      height: 100%;
-      overflow: hidden;
-      font-family: 'Orbitron', sans-serif;
-      background-color: #000;
-    }
-
-    .map-container {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      background: red;
-      background-size: cover;
-    }
-
-    .zone {
-      position: absolute;
-      border: 2px solid rgba(0, 255, 255, 0.5);
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    .zone:hover {
-      border-color: #00ffff;
-      background-color: rgba(0, 255, 255, 0.1);
+    body {
+      background-color: red; /* test color */
     }
   </style>
 </head>
 <body>
   <div class="map-container">
-    <!-- Example clickable zone -->
-    <div class="zone" style="top: 30%; left: 40%; width: 100px; height: 100px;" title="Watson"></div>
+    <!-- content -->
   </div>
 </body>
 </html>
