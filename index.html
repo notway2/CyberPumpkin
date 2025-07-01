@@ -3,12 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Night City Interactive Map</title>
+  <title>Night City Gangs</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="map-container">
-    <div class="zone" style="top: 30%; left: 40%;" title="Watson"></div>
+    <div class="zone" style="top: 30%; left: 40%;" data-gang="Maelstrom" data-leader="Simon Randall (Royce)" data-description="A gang obsessed with cyberware and body modification.">
+    </div>
+    <div class="zone" style="top: 20%; left: 60%;" data-gang="Tyger Claws" data-leader="Hana" data-description="A Yakuza-style gang known for their speed and brutality.">
+    </div>
+    <div class="zone" style="top: 50%; left: 50%;" data-gang="6th Street" data-leader="Wade" data-description="A vigilante gang with roots in the NUSA military.">
+    </div>
+    <div class="zone" style="top: 70%; left: 30%;" data-gang="Animals" data-leader="Sasquatch" data-description="A gang of muscle-obsessed brawlers who use brute force.">
+    </div>
+    <div class="zone" style="top: 60%; left: 65%;" data-gang="Voodoo Boys" data-leader="Brigitte" data-description="Elite netrunners from Pacifica with deep knowledge of the Blackwall.">
+    </div>
   </div>
+
+  <div class="popup" id="popup">
+    <h2 id="gang-name"></h2>
+    <p><strong>Leader:</strong> <span id="gang-leader"></span></p>
+    <p id="gang-description"></p>
+    <button onclick="closePopup()">Close</button>
+  </div>
+
+  <script>
+    const zones = document.querySelectorAll('.zone');
+    const popup = document.getElementById('popup');
+    const gangName = document.getElementById('gang-name');
+    const gangLeader = document.getElementById('gang-leader');
+    const gangDescription = document.getElementById('gang-description');
+
+    zones.forEach(zone => {
+      zone.addEventListener('click', () => {
+        gangName.textContent = zone.dataset.gang;
+        gangLeader.textContent = zone.dataset.leader;
+        gangDescription.textContent = zone.dataset.description;
+        popup.style.display = 'block';
+      });
+    });
+
+    function closePopup() {
+      popup.style.display = 'none';
+    }
+  </script>
 </body>
 </html>
+
