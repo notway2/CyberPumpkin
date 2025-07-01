@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My First Vibe Website</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #ff9a9e, #fad0c4);
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+    h1 {
+      font-size: 3em;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to My Vibe Website ✨</h1>
+  <p>Made with love and GitHub Pages 💻</p>
+</body>
+</html>
