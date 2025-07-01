@@ -8,9 +8,9 @@
 </head>
 <body>
   <div class="map-container">
-    <!-- Example clickable zone -->
-    <div class="zone" style="top: 30%; left: 40%; width: 100px; height: 100px;" title="Watson"></div>
+    <!-- You can add zones here later -->
   </div>
 </body>
 </html>
+
 
