@@ -3,67 +3,98 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cyberpunk Interactive Map</title>
+  <title>Cyberpunk Map (Vanilla Zoom/Pan)</title>
   <link rel="stylesheet" href="style.css"/>
-  <!-- Panzoom CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom@9.4.0/dist/panzoom.min.js"></script>
 </head>
 <body>
-  <div class="wrapper">
-    <div class="map-controls">
-      <button id="zoom-in">+</button>
-      <button id="zoom-out">−</button>
-    </div>
-    <div class="map-border">
-      <div class="map-panzoom" id="map-panzoom">
-        <img src="night-city-map.jpg" alt="Night City Map" class="map-bg"/>
-        <!-- Example POIs (edit/add as needed) -->
-        <div class="zone" style="top: 28%; left: 42%;" data-name="Maelstrom" data-details="Cyberware fanatics."></div>
-        <div class="zone" style="top: 20%; left: 60%;" data-name="Tyger Claws" data-details="Yakuza-style gang."></div>
-        <div class="zone" style="top: 55%; left: 50%;" data-name="6th Street" data-details="Vigilante veterans."></div>
-        <div class="zone" style="top: 65%; left: 65%;" data-name="Voodoo Boys" data-details="Elite netrunners."></div>
-        <div class="zone" style="top: 80%; left: 40%;" data-name="Moxes" data-details="Brothel protectors."></div>
-      </div>
-    </div>
-    <div class="popup" id="popup">
-      <h2 id="poi-title"></h2>
-      <p id="poi-details"></p>
-      <button class="close-btn" onclick="closePopup()">Close</button>
+  <div class="controls">
+    <button onclick="zoom(1.2)">+</button>
+    <button onclick="zoom(0.8)">-</button>
+    <button onclick="resetView()">Reset</button>
+  </div>
+  <div class="map-frame">
+    <div class="map-inner" id="map-inner">
+      <img src="night-city-map.jpg" class="map-bg" alt="Night City Map"/>
+      <!-- POIs: adjust left/top % for desired locations -->
+      <div class="zone" style="left:42%;top:28%;" data-name="Maelstrom"></div>
+      <div class="zone" style="left:60%;top:20%;" data-name="Tyger Claws"></div>
+      <div class="zone" style="left:50%;top:55%;" data-name="6th Street"></div>
+      <div class="zone" style="left:65%;top:65%;" data-name="Voodoo Boys"></div>
+      <div class="zone" style="left:40%;top:80%;" data-name="Moxes"></div>
     </div>
   </div>
+  <div class="popup" id="popup">
+    <span id="popup-title"></span>
+    <button onclick="closePopup()" class="close-btn">×</button>
+  </div>
   <script>
-    // Panzoom functionality
-    const mapPanzoom = document.getElementById('map-panzoom');
-    const panzoom = Panzoom(mapPanzoom, {
-      maxScale: 4,
-      minScale: 1,
-      contain: 'outside'
+    // Simple transform state
+    let scale = 1, originX = 0, originY = 0, isDragging = false, startX, startY;
+    const map = document.getElementById('map-inner');
+    const mapFrame = document.querySelector('.map-frame');
+    function applyTransform() {
+      map.style.transform = `translate(${originX}px,${originY}px) scale(${scale})`;
+    }
+    function zoom(factor) {
+      scale *= factor;
+      scale = Math.max(0.5, Math.min(scale, 4));
+      applyTransform();
+    }
+    function resetView() {
+      scale = 1; originX = 0; originY = 0;
+      applyTransform();
+    }
+    // Mouse drag
+    mapFrame.addEventListener('mousedown', e => {
+      isDragging = true; 
+      startX = e.clientX - originX; startY = e.clientY - originY;
+      mapFrame.style.cursor = "grabbing";
     });
-
-    // Enable mouse wheel zooming and pinch-to-zoom
-    mapPanzoom.parentElement.addEventListener('wheel', panzoom.zoomWithWheel, { passive: false });
-
-    document.getElementById('zoom-in').onclick = () => panzoom.zoomIn();
-    document.getElementById('zoom-out').onclick = () => panzoom.zoomOut();
-
-    // Popup functionality
-    const popup = document.getElementById('popup');
-    const poiTitle = document.getElementById('poi-title');
-    const poiDetails = document.getElementById('poi-details');
+    window.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      originX = e.clientX - startX;
+      originY = e.clientY - startY;
+      applyTransform();
+    });
+    window.addEventListener('mouseup', () => { 
+      isDragging = false; 
+      mapFrame.style.cursor = "grab";
+    });
+    // Touch events for mobile
+    mapFrame.addEventListener('touchstart', function(e){
+      if(e.touches.length === 1){
+        isDragging = true; 
+        startX = e.touches[0].clientX - originX; 
+        startY = e.touches[0].clientY - originY;
+      }
+    });
+    mapFrame.addEventListener('touchmove', function(e){
+      if(isDragging && e.touches.length === 1){
+        originX = e.touches[0].clientX - startX;
+        originY = e.touches[0].clientY - startY;
+        applyTransform();
+      }
+    });
+    mapFrame.addEventListener('touchend', function(){ isDragging = false; });
+    // Wheel zoom (desktop)
+    mapFrame.addEventListener('wheel', function(e){
+      e.preventDefault();
+      let factor = e.deltaY < 0 ? 1.1 : 0.9;
+      zoom(factor);
+    }, {passive:false});
+    // POI Popups
     document.querySelectorAll('.zone').forEach(zone => {
       zone.addEventListener('click', e => {
-        poiTitle.textContent = zone.dataset.name;
-        poiDetails.textContent = zone.dataset.details;
+        const popup = document.getElementById('popup');
+        document.getElementById('popup-title').textContent = zone.dataset.name;
         popup.style.display = 'block';
       });
     });
     function closePopup() {
-      popup.style.display = 'none';
+      document.getElementById('popup').style.display = 'none';
     }
-    // Optional: Tap outside popup to close
-    popup.addEventListener('click', e => {
-      if (e.target === popup) closePopup();
-    });
+    // Initial state
+    resetView();
   </script>
 </body>
 </html>
