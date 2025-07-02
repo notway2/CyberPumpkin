@@ -15,8 +15,8 @@
       <button id="zoom-out">−</button>
     </div>
     <div class="map-border">
-      <div class="map-container" id="map">
-        <img src="night-city-map.jpg" alt="Night City Map" class="map-bg"/>
+      <div class="map-panzoom" id="map-panzoom">
+        <img src="your-map-image.jpg" alt="Night City Map" class="map-bg"/>
         <!-- Example POIs (edit/add as needed) -->
         <div class="zone" style="top: 28%; left: 42%;" data-name="Maelstrom" data-details="Cyberware fanatics."></div>
         <div class="zone" style="top: 20%; left: 60%;" data-name="Tyger Claws" data-details="Yakuza-style gang."></div>
@@ -33,13 +33,15 @@
   </div>
   <script>
     // Panzoom functionality
-    const mapElem = document.getElementById('map');
-    const panzoom = Panzoom(mapElem, {
+    const mapPanzoom = document.getElementById('map-panzoom');
+    const panzoom = Panzoom(mapPanzoom, {
       maxScale: 4,
       minScale: 1,
       contain: 'outside'
     });
-    mapElem.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
+
+    // Enable mouse wheel zooming and pinch-to-zoom
+    mapPanzoom.parentElement.addEventListener('wheel', panzoom.zoomWithWheel, { passive: false });
 
     document.getElementById('zoom-in').onclick = () => panzoom.zoomIn();
     document.getElementById('zoom-out').onclick = () => panzoom.zoomOut();
