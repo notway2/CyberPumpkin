@@ -10,7 +10,7 @@ body {
 
 #map-container {
   flex: 1;
-  background: #1a1a1a;
+  background: #0a0a0a;
   position: relative;
   overflow: hidden;
 }
@@ -20,7 +20,7 @@ svg {
   height: 100%;
   user-select: none;
   cursor: grab;
-  background: #222;
+  background: #111;
 }
 
 svg:active {
@@ -28,21 +28,21 @@ svg:active {
 }
 
 .zone {
-  fill: #444;
-  stroke: #666;
-  stroke-width: 2;
-  transition: fill 0.3s ease, filter 0.3s ease;
+  fill: #004040;
+  stroke: #00ffff;
+  stroke-width: 3;
+  transition: fill 0.3s ease;
+  pointer-events: all;
 }
 
 .zone:hover {
-  fill: #0ff;
-  filter: drop-shadow(0 0 6px #0ff);
+  fill: #00ffff;
   cursor: pointer;
 }
 
 .zone.active {
-  fill: #0ff;
-  filter: drop-shadow(0 0 10px #0ff);
+  fill: #00ffff;
+  filter: drop-shadow(0 0 8px #00ffff);
 }
 
 #sidebar {
