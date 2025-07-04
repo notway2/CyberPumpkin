@@ -19,14 +19,12 @@
         <div class="settings">
           <button id="settingsBtn">⚙️</button>
           <div id="settingsMenu" class="dropdown hidden">
-            <button onclick="openCreateModal()">➕ Create Character</button>
+            <button id="createCharacterBtn">➕ Create Character</button>
           </div>
         </div>
       </div>
 
-      <div class="party-grid" id="partyGrid">
-        <!-- Characters will be dynamically inserted -->
-      </div>
+      <div class="party-grid" id="partyGrid"></div>
     </section>
 
     <section class="log-section">
@@ -38,7 +36,7 @@
   <!-- Modal -->
   <div class="modal hidden" id="characterModal">
     <div class="modal-content">
-      <button class="close-btn" onclick="closeModal()">✖</button>
+      <button class="close-btn" id="closeModalBtn">✖</button>
       <h3 id="modalTitle">Create Character</h3>
       <label>Name:
         <input type="text" id="charName" />
@@ -53,16 +51,18 @@
         <input type="number" id="charHP" min="1" value="10" />
       </label>
       <label>Alignment:
-        <input type="text" id="charAlignment" placeholder="Chaotic Good, Neutral, etc." />
+        <input type="text" id="charAlignment" />
       </label>
       <label>Backstory:
-        <textarea id="charBackstory" rows="4" placeholder="Tell us about your character..."></textarea>
+        <textarea id="charBackstory" rows="4"></textarea>
       </label>
       <label>Custom Avatar (emoji):
-        <input type="text" id="charAvatar" placeholder="🧙" maxlength="2"/>
+        <input type="text" id="charAvatar" maxlength="2" />
       </label>
-      <button onclick="saveCharacter()">Save</button>
-      <button onclick="closeModal()">Cancel</button>
+      <div class="modal-actions">
+        <button id="saveCharacterBtn">Save</button>
+        <button id="cancelCharacterBtn">Cancel</button>
+      </div>
     </div>
   </div>
 
@@ -70,9 +70,13 @@
     document.addEventListener('DOMContentLoaded', () => {
       const settingsBtn = document.getElementById('settingsBtn');
       const settingsMenu = document.getElementById('settingsMenu');
-      const partyGrid = document.getElementById('partyGrid');
+      const createBtn = document.getElementById('createCharacterBtn');
 
-      const characterModal = document.getElementById('characterModal');
+      const modal = document.getElementById('characterModal');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      const cancelBtn = document.getElementById('cancelCharacterBtn');
+      const saveBtn = document.getElementById('saveCharacterBtn');
+
       const charName = document.getElementById('charName');
       const charClass = document.getElementById('charClass');
       const charLevel = document.getElementById('charLevel');
@@ -81,35 +85,30 @@
       const charBackstory = document.getElementById('charBackstory');
       const charAvatar = document.getElementById('charAvatar');
 
+      const partyGrid = document.getElementById('partyGrid');
       let characters = [];
 
-      // Toggle dropdown
+      // Show/hide dropdown
       settingsBtn.addEventListener('click', () => {
         settingsMenu.classList.toggle('hidden');
       });
 
-      // Modal open
-      window.openCreateModal = function () {
-        document.getElementById('modalTitle').textContent = 'Create Character';
-        charName.value = '';
-        charClass.value = '';
-        charLevel.value = 1;
-        charHP.value = 10;
-        charAlignment.value = '';
-        charBackstory.value = '';
-        charAvatar.value = '';
-        characterModal.classList.remove('hidden');
+      // Open modal
+      createBtn.addEventListener('click', () => {
+        openModal();
         settingsMenu.classList.add('hidden');
-      }
+      });
 
-      // Modal close
-      window.closeModal = function () {
-        characterModal.classList.add('hidden');
-      }
+      // Close modal
+      closeModalBtn.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+      window.addEventListener('click', e => {
+        if (e.target === modal) closeModal();
+      });
 
       // Save character
-      window.saveCharacter = function () {
-        const newChar = {
+      saveBtn.addEventListener('click', () => {
+        const char = {
           name: charName.value,
           class: charClass.value,
           level: parseInt(charLevel.value),
@@ -118,12 +117,31 @@
           backstory: charBackstory.value,
           avatar: charAvatar.value || getAvatar(charClass.value)
         };
-        characters.push(newChar);
+        characters.push(char);
         renderCharacters();
         closeModal();
+      });
+
+      function openModal() {
+        modal.classList.remove('hidden');
+        clearForm();
       }
 
-      // Render character cards
+      function closeModal() {
+        modal.classList.add('hidden');
+        clearForm();
+      }
+
+      function clearForm() {
+        charName.value = '';
+        charClass.value = '';
+        charLevel.value = 1;
+        charHP.value = 10;
+        charAlignment.value = '';
+        charBackstory.value = '';
+        charAvatar.value = '';
+      }
+
       function renderCharacters() {
         partyGrid.innerHTML = '';
         characters.forEach(char => {
@@ -150,7 +168,6 @@
         });
       }
 
-      // Fallback emoji selector
       function getAvatar(className) {
         const cls = className.toLowerCase();
         if (cls.includes('wizard')) return '🧙';
@@ -160,11 +177,6 @@
         if (cls.includes('ranger')) return '🏹';
         return '🧝';
       }
-
-      // Close modal by clicking outside
-      window.addEventListener('click', (e) => {
-        if (e.target === characterModal) closeModal();
-      });
     });
   </script>
 </body>
