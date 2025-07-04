@@ -40,11 +40,55 @@
     </section>
   </div>
 
+  <!-- Modal -->
+  <div id="modalOverlay" class="modal-overlay hidden">
+    <div class="modal">
+      <button id="modalCloseBtn" class="modal-close">&times;</button>
+      <h2>Create New Character</h2>
+      <form id="characterForm">
+        <label>
+          Name:<br />
+          <input type="text" name="name" required />
+        </label>
+        <label>
+          Class:<br />
+          <input type="text" name="class" required />
+        </label>
+        <label>
+          Level:<br />
+          <input type="number" name="level" min="1" max="20" required />
+        </label>
+        <label>
+          HP:<br />
+          <input type="number" name="hp" min="1" required />
+        </label>
+        <label>
+          Alignment:<br />
+          <input type="text" name="alignment" required />
+        </label>
+        <label>
+          Backstory:<br />
+          <textarea name="backstory" rows="3" required></textarea>
+        </label>
+        <label>
+          Avatar (Emoji):<br />
+          <input type="text" name="avatar" maxlength="2" placeholder="e.g. 🗡️" required />
+        </label>
+        <button type="submit" class="submit-btn">Add Character</button>
+      </form>
+    </div>
+  </div>
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const settingsBtn = document.getElementById('settingsBtn');
       const settingsMenu = document.getElementById('settingsMenu');
       const partyGrid = document.getElementById('partyGrid');
+
+      const modalOverlay = document.getElementById('modalOverlay');
+      const modalCloseBtn = document.getElementById('modalCloseBtn');
+      const createCharBtn = document.getElementById('createCharBtn');
+      const characterForm = document.getElementById('characterForm');
 
       let characters = [];
 
@@ -91,23 +135,54 @@
         });
       }
 
-      const createCharBtn = document.getElementById('createCharBtn');
-      const editCharBtn = document.getElementById('editCharBtn');
-      const deleteCharBtn = document.getElementById('deleteCharBtn');
-
+      // Show modal on Create Character click
       createCharBtn.addEventListener('click', () => {
-        alert('Create Character clicked — UI coming soon!');
         settingsMenu.classList.add('hidden');
+        modalOverlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden'; // Disable background scroll
       });
 
-      editCharBtn.addEventListener('click', () => {
-        alert('Edit Character clicked — UI coming soon!');
-        settingsMenu.classList.add('hidden');
+      // Close modal on X button click
+      modalCloseBtn.addEventListener('click', closeModal);
+
+      // Close modal on clicking outside modal content
+      modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) {
+          closeModal();
+        }
       });
 
-      deleteCharBtn.addEventListener('click', () => {
-        alert('Delete Character clicked — UI coming soon!');
-        settingsMenu.classList.add('hidden');
+      function closeModal() {
+        modalOverlay.classList.add('hidden');
+        document.body.style.overflow = ''; // Restore scroll
+        characterForm.reset();
+      }
+
+      // Handle form submission
+      characterForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(characterForm);
+        const newChar = {
+          name: formData.get('name').trim(),
+          class: formData.get('class').trim(),
+          level: Number(formData.get('level')),
+          hp: Number(formData.get('hp')),
+          alignment: formData.get('alignment').trim(),
+          backstory: formData.get('backstory').trim(),
+          avatar: formData.get('avatar').trim() || '👤'
+        };
+
+        characters.push(newChar);
+        renderCharacters();
+        closeModal();
+      });
+
+      // Optional: close settings menu if clicking outside
+      document.addEventListener('click', (e) => {
+        if (!settingsMenu.contains(e.target) && e.target !== settingsBtn) {
+          settingsMenu.classList.add('hidden');
+        }
       });
     });
   </script>
