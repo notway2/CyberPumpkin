@@ -25,7 +25,7 @@
       </div>
 
       <div class="party-grid" id="partyGrid">
-        <!-- Characters will be inserted here -->
+        <!-- Characters will be dynamically inserted -->
       </div>
     </section>
 
@@ -35,9 +35,10 @@
     </section>
   </div>
 
-  <!-- Modal for character creation -->
+  <!-- Modal -->
   <div class="modal hidden" id="characterModal">
     <div class="modal-content">
+      <button class="close-btn" onclick="closeModal()">✖</button>
       <h3 id="modalTitle">Create Character</h3>
       <label>Name:
         <input type="text" id="charName" />
@@ -51,87 +52,120 @@
       <label>HP:
         <input type="number" id="charHP" min="1" value="10" />
       </label>
+      <label>Alignment:
+        <input type="text" id="charAlignment" placeholder="Chaotic Good, Neutral, etc." />
+      </label>
+      <label>Backstory:
+        <textarea id="charBackstory" rows="4" placeholder="Tell us about your character..."></textarea>
+      </label>
+      <label>Custom Avatar (emoji):
+        <input type="text" id="charAvatar" placeholder="🧙" maxlength="2"/>
+      </label>
       <button onclick="saveCharacter()">Save</button>
       <button onclick="closeModal()">Cancel</button>
     </div>
   </div>
 
   <script>
-    const settingsBtn = document.getElementById('settingsBtn');
-    const settingsMenu = document.getElementById('settingsMenu');
-    const partyGrid = document.getElementById('partyGrid');
+    document.addEventListener('DOMContentLoaded', () => {
+      const settingsBtn = document.getElementById('settingsBtn');
+      const settingsMenu = document.getElementById('settingsMenu');
+      const partyGrid = document.getElementById('partyGrid');
 
-    const characterModal = document.getElementById('characterModal');
-    const charName = document.getElementById('charName');
-    const charClass = document.getElementById('charClass');
-    const charLevel = document.getElementById('charLevel');
-    const charHP = document.getElementById('charHP');
+      const characterModal = document.getElementById('characterModal');
+      const charName = document.getElementById('charName');
+      const charClass = document.getElementById('charClass');
+      const charLevel = document.getElementById('charLevel');
+      const charHP = document.getElementById('charHP');
+      const charAlignment = document.getElementById('charAlignment');
+      const charBackstory = document.getElementById('charBackstory');
+      const charAvatar = document.getElementById('charAvatar');
 
-    let characters = [];
+      let characters = [];
 
-    settingsBtn.addEventListener('click', () => {
-      settingsMenu.classList.toggle('hidden');
-    });
-
-    function openCreateModal() {
-      document.getElementById('modalTitle').textContent = 'Create Character';
-      charName.value = '';
-      charClass.value = '';
-      charLevel.value = 1;
-      charHP.value = 10;
-      characterModal.classList.remove('hidden');
-      settingsMenu.classList.add('hidden');
-    }
-
-    function closeModal() {
-      characterModal.classList.add('hidden');
-    }
-
-    function saveCharacter() {
-      const newChar = {
-        name: charName.value,
-        class: charClass.value,
-        level: parseInt(charLevel.value),
-        hp: parseInt(charHP.value)
-      };
-      characters.push(newChar);
-      renderCharacters();
-      closeModal();
-    }
-
-    function renderCharacters() {
-      partyGrid.innerHTML = '';
-      characters.forEach(char => {
-        const card = document.createElement('div');
-        card.className = 'party-card';
-
-        const avatar = document.createElement('div');
-        avatar.className = 'avatar';
-        avatar.textContent = getAvatar(char.class);
-
-        const info = document.createElement('div');
-        info.className = 'info';
-        info.innerHTML = `
-          <h3>${char.name}</h3>
-          <p>Level ${char.level} ${char.class}</p>
-          <p>HP: ${char.hp}</p>
-        `;
-
-        card.appendChild(avatar);
-        card.appendChild(info);
-        partyGrid.appendChild(card);
+      // Toggle dropdown
+      settingsBtn.addEventListener('click', () => {
+        settingsMenu.classList.toggle('hidden');
       });
-    }
 
-    function getAvatar(className) {
-      const cls = className.toLowerCase();
-      if (cls.includes('wizard') || cls.includes('mage')) return '🧙';
-      if (cls.includes('rogue') || cls.includes('thief')) return '🗡️';
-      if (cls.includes('cleric') || cls.includes('priest')) return '⛪';
-      if (cls.includes('warrior') || cls.includes('fighter')) return '🛡️';
-      if (cls.includes('ranger') || cls.includes('archer')) return '🏹';
-      return '🧝'; // default
-    }
+      // Modal open
+      window.openCreateModal = function () {
+        document.getElementById('modalTitle').textContent = 'Create Character';
+        charName.value = '';
+        charClass.value = '';
+        charLevel.value = 1;
+        charHP.value = 10;
+        charAlignment.value = '';
+        charBackstory.value = '';
+        charAvatar.value = '';
+        characterModal.classList.remove('hidden');
+        settingsMenu.classList.add('hidden');
+      }
+
+      // Modal close
+      window.closeModal = function () {
+        characterModal.classList.add('hidden');
+      }
+
+      // Save character
+      window.saveCharacter = function () {
+        const newChar = {
+          name: charName.value,
+          class: charClass.value,
+          level: parseInt(charLevel.value),
+          hp: parseInt(charHP.value),
+          alignment: charAlignment.value,
+          backstory: charBackstory.value,
+          avatar: charAvatar.value || getAvatar(charClass.value)
+        };
+        characters.push(newChar);
+        renderCharacters();
+        closeModal();
+      }
+
+      // Render character cards
+      function renderCharacters() {
+        partyGrid.innerHTML = '';
+        characters.forEach(char => {
+          const card = document.createElement('div');
+          card.className = 'party-card';
+
+          const avatar = document.createElement('div');
+          avatar.className = 'avatar';
+          avatar.textContent = char.avatar;
+
+          const info = document.createElement('div');
+          info.className = 'info';
+          info.innerHTML = `
+            <h3>${char.name}</h3>
+            <p>Level ${char.level} ${char.class}</p>
+            <p>HP: ${char.hp}</p>
+            <p><em>${char.alignment}</em></p>
+            <details><summary>Backstory</summary><p>${char.backstory}</p></details>
+          `;
+
+          card.appendChild(avatar);
+          card.appendChild(info);
+          partyGrid.appendChild(card);
+        });
+      }
+
+      // Fallback emoji selector
+      function getAvatar(className) {
+        const cls = className.toLowerCase();
+        if (cls.includes('wizard')) return '🧙';
+        if (cls.includes('rogue')) return '🗡️';
+        if (cls.includes('cleric')) return '⛪';
+        if (cls.includes('warrior')) return '🛡️';
+        if (cls.includes('ranger')) return '🏹';
+        return '🧝';
+      }
+
+      // Close modal by clicking outside
+      window.addEventListener('click', (e) => {
+        if (e.target === characterModal) closeModal();
+      });
+    });
   </script>
 </body>
 </html>
