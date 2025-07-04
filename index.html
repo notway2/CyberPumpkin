@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" >
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,14 +8,39 @@
 </head>
 <body>
   <div id="map-container">
-    <!-- Simplified SVG with 5 zones -->
-    <svg id="night-city-map" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" >
-      <!-- Zones are simple shapes with unique IDs -->
-      <path id="zone1" class="zone" d="M50 50 L350 50 L350 250 L50 250 Z" />
-      <path id="zone2" class="zone" d="M370 50 L750 50 L750 250 L370 250 Z" />
-      <path id="zone3" class="zone" d="M50 270 L350 270 L350 550 L50 550 Z" />
-      <path id="zone4" class="zone" d="M370 270 L750 270 L750 550 L370 550 Z" />
-      <circle id="zone5" class="zone" cx="400" cy="300" r="60" />
+    <svg
+      id="night-city-map"
+      viewBox="0 0 800 600"
+      xmlns="http://www.w3.org/2000/svg"
+      >
+      <!-- Zones -->
+      <path
+        id="zone1"
+        class="zone"
+        d="M50 50 L350 50 L350 250 L50 250 Z"
+      />
+      <path
+        id="zone2"
+        class="zone"
+        d="M370 50 L750 50 L750 250 L370 250 Z"
+      />
+      <path
+        id="zone3"
+        class="zone"
+        d="M50 270 L350 270 L350 550 L50 550 Z"
+      />
+      <path
+        id="zone4"
+        class="zone"
+        d="M370 270 L750 270 L750 550 L370 550 Z"
+      />
+      <circle
+        id="zone5"
+        class="zone"
+        cx="400"
+        cy="300"
+        r="60"
+      />
     </svg>
   </div>
   <div id="sidebar">
@@ -25,74 +50,69 @@
     </div>
   </div>
 
-  <!-- svg-pan-zoom library -->
   <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
   <script>
-    // Zone data
-    const zoneData = {
-      zone1: {
-        name: "Watson District",
-        description: "The gritty heart of Night City, full of black markets and megacorp secrets."
-      },
-      zone2: {
-        name: "Westbrook",
-        description: "Luxury and decadence meet danger in this high-class district."
-      },
-      zone3: {
-        name: "Santo Domingo",
-        description: "Industrial zone with factories and power plants."
-      },
-      zone4: {
-        name: "Heywood",
-        description: "A suburban district with a mix of middle class and gang activity."
-      },
-      zone5: {
-        name: "City Center",
-        description: "The bustling core of Night City — corporate HQs and high rises."
+    window.addEventListener('load', () => {
+      const zoneData = {
+        zone1: {
+          name: "Watson District",
+          description:
+            "The gritty heart of Night City, full of black markets and megacorp secrets.",
+        },
+        zone2: {
+          name: "Westbrook",
+          description:
+            "Luxury and decadence meet danger in this high-class district.",
+        },
+        zone3: {
+          name: "Santo Domingo",
+          description: "Industrial zone with factories and power plants.",
+        },
+        zone4: {
+          name: "Heywood",
+          description:
+            "A suburban district with a mix of middle class and gang activity.",
+        },
+        zone5: {
+          name: "City Center",
+          description:
+            "The bustling core of Night City — corporate HQs and high rises.",
+        },
+      };
+
+      const svg = document.getElementById("night-city-map");
+      const infoDiv = document.getElementById("zone-info");
+      let activeZone = null;
+
+      function onZoneClick(e) {
+        if (activeZone) activeZone.classList.remove("active");
+        activeZone = e.target;
+        activeZone.classList.add("active");
+
+        const id = activeZone.id;
+        const data = zoneData[id];
+        if (data) {
+          infoDiv.innerHTML = `<h3>${data.name}</h3><p>${data.description}</p>`;
+        } else {
+          infoDiv.innerHTML = `<p>No information available.</p>`;
+        }
       }
-    };
 
-    const svg = document.getElementById("night-city-map");
-    const infoDiv = document.getElementById("zone-info");
-    let activeZone = null;
+      svg.querySelectorAll(".zone").forEach((zone) => {
+        zone.addEventListener("click", onZoneClick);
+      });
 
-    // Handle zone clicks
-    function onZoneClick(e) {
-      if (activeZone) {
-        activeZone.classList.remove("active");
-      }
-      activeZone = e.target;
-      activeZone.classList.add("active");
-
-      const id = activeZone.id;
-      const data = zoneData[id];
-      if (data) {
-        infoDiv.innerHTML = `
-          <h3>${data.name}</h3>
-          <p>${data.description}</p>
-        `;
-      } else {
-        infoDiv.innerHTML = `<p>No information available.</p>`;
-      }
-    }
-
-    // Attach click listeners
-    const zones = svg.querySelectorAll(".zone");
-    zones.forEach(zone => {
-      zone.addEventListener("click", onZoneClick);
-    });
-
-    // Initialize svg-pan-zoom
-    const panZoom = svgPanZoom(svg, {
-      zoomEnabled: true,
-      controlIconsEnabled: true,
-      fit: true,
-      center: true,
-      minZoom: 0.5,
-      maxZoom: 8,
-      zoomScaleSensitivity: 0.3,
-      panEnabled: true,
-      dblClickZoomEnabled: false,
+      svgPanZoom(svg, {
+        zoomEnabled: true,
+        controlIconsEnabled: true,
+        fit: true,
+        center: true,
+        minZoom: 0.5,
+        maxZoom: 8,
+        zoomScaleSensitivity: 0.3,
+        panEnabled: true,
+        dblClickZoomEnabled: false,
+      });
     });
   </script>
 </body>
