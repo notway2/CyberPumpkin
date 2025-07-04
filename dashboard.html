@@ -24,8 +24,9 @@
         <div class="settings">
           <button id="settingsBtn">⚙️</button>
           <div id="settingsMenu" class="dropdown hidden">
-            <!-- Create Character removed -->
-            <p style="padding: 0.25rem 0.5rem; color: #aaa;">Coming Soon...</p>
+            <button id="createCharBtn">Create Character</button>
+            <button id="editCharBtn">Edit Character</button>
+            <button id="deleteCharBtn">Delete Character</button>
           </div>
         </div>
       </div>
@@ -89,6 +90,25 @@
           partyGrid.appendChild(card);
         });
       }
+
+      const createCharBtn = document.getElementById('createCharBtn');
+      const editCharBtn = document.getElementById('editCharBtn');
+      const deleteCharBtn = document.getElementById('deleteCharBtn');
+
+      createCharBtn.addEventListener('click', () => {
+        alert('Create Character clicked — UI coming soon!');
+        settingsMenu.classList.add('hidden');
+      });
+
+      editCharBtn.addEventListener('click', () => {
+        alert('Edit Character clicked — UI coming soon!');
+        settingsMenu.classList.add('hidden');
+      });
+
+      deleteCharBtn.addEventListener('click', () => {
+        alert('Delete Character clicked — UI coming soon!');
+        settingsMenu.classList.add('hidden');
+      });
     });
   </script>
 </body>
