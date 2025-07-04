@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Create Character</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Override or extend your style.css for this page */
+
+    body {
+      background-color: #1e1e2f;
+      color: #eaeaea;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 1rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      padding-bottom: 3rem;
+    }
+
+    header {
+      width: 100%;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #ff8800;
+    }
+
+    header h1 {
+      font-size: 2rem;
+    }
+
+    .back-btn {
+      background: #ff8800;
+      color: #000;
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background: #e67600;
+    }
+
+    form {
+      flex: 1 1 320px;
+      background: #2e2e4f;
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 0 12px #000a;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    form label {
+      font-weight: 600;
+      font-size: 1rem;
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+
+    form input[type="text"],
+    form input[type="number"],
+    form textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: none;
+      background: #1e1e2f;
+      color: #eaeaea;
+      font-size: 1rem;
+      resize: vertical;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    form textarea {
+      min-height: 80px;
+    }
+
+    .submit-btn {
+      margin-top: 1rem;
+      background: #ff8800;
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem;
+      color: #000;
+      font-weight: 700;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      background: #e67600;
+    }
+
+    /* Preview Section */
+
+    .preview {
+      flex: 1 1 300px;
+      background: #2e2e4f;
+      border-radius: 12px;
+      padding: 2rem 1.5rem;
+      box-shadow: 0 0 12px #000a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #eaeaea;
+      user-select: none;
+    }
+
+    .avatar-preview {
+      font-size: 5rem;
+      margin-bottom: 1rem;
+    }
+
+    .name-preview {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+      color: #ff8800;
+      text-align: center;
+      word-break: break-word;
+    }
+
+    .class-level-preview {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+      font-style: italic;
+      text-align: center;
+    }
+
+    .hp-preview {
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #f66;
+    }
+
+    .alignment-preview {
+      font-style: italic;
+      margin-bottom: 1rem;
+      color: #bbb;
+    }
+
+    .backstory-preview {
+      font-size: 0.9rem;
+      line-height: 1.3;
+      color: #aaa;
+      border-top: 1px solid #444;
+      padding-top: 1rem;
+      max-height: 180px;
+      overflow-y: auto;
+      width: 100%;
+      text-align: center;
+      white-space: pre-wrap;
+    }
+
+    /* Responsive */
+
+    @media (max-width: 720px) {
+      .container {
+        flex-direction: column;
+      }
+
+      form, .preview {
+        flex: none;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Create New Character</h1>
+      <button class="back-btn" onclick="window.location.href='index.html'">← Back to Dashboard</button>
+    </header>
+
+    <form id="characterForm" novalidate>
+      <label>
+        Name:<br />
+        <input type="text" name="name" required placeholder="Enter character name" />
+      </label>
+
+      <label>
+        Class:<br />
+        <input type="text" name="class" required placeholder="E.g. Rogue, Netrunner" />
+      </label>
+
+      <label>
+        Level:<br />
+        <input type="number" name="level" min="1" max="20" required placeholder="1" />
+      </label>
+
+      <label>
+        HP:<br />
+        <input type="number" name="hp" min="1" required placeholder="Hit points" />
+      </label>
+
+      <label>
+        Alignment:<br />
+        <input type="text" name="alignment" required placeholder="E.g. Chaotic Neutral" />
+      </label>
+
+      <label>
+        Backstory:<br />
+        <textarea name="backstory" rows="4" placeholder="A short background story..." required></textarea>
+      </label>
+
+      <label>
+        Avatar (Emoji):<br />
+        <input type="text" name="avatar" maxlength="2" placeholder="E.g. 🗡️" required />
+      </label>
+
+      <button type="submit" class="submit-btn">Add Character</button>
+    </form>
+
+    <section class="preview" aria-live="polite" aria-label="Character preview">
+      <div class="avatar-preview" id="avatarPreview">👤</div>
+      <div class="name-preview" id="namePreview">Your Name</div>
+      <div class="class-level-preview" id="classLevelPreview">Class - Level</div>
+      <div class="hp-preview" id="hpPreview">HP: --</div>
+      <div class="alignment-preview" id="alignmentPreview">Alignment</div>
+      <div class="backstory-preview" id="backstoryPreview">Backstory preview will appear here.</div>
+    </section>
+  </div>
+
+  <script>
+    const form = document.getElementById('characterForm');
+
+    const avatarPreview = document.getElementById('avatarPreview');
+    const namePreview = document.getElementById('namePreview');
+    const classLevelPreview = document.getElementById('classLevelPreview');
+    const hpPreview = document.getElementById('hpPreview');
+    const alignmentPreview = document.getElementById('alignmentPreview');
+    const backstoryPreview = document.getElementById('backstoryPreview');
+
+    // Update preview as user types
+    form.addEventListener('input', () => {
+      const data = new FormData(form);
+
+      const name = data.get('name').trim() || 'Your Name';
+      const cls = data.get('class').trim() || 'Class';
+      const level = data.get('level') || '--';
+      const hp = data.get('hp') || '--';
+      const alignment = data.get('alignment').trim() || 'Alignment';
+      const backstory = data.get('backstory').trim() || 'Backstory preview will appear here.';
+      const avatar = data.get('avatar').trim() || '👤';
+
+      avatarPreview.textContent = avatar;
+      namePreview.textContent = name;
+      classLevelPreview.textContent = `${cls} - Level ${level}`;
+      hpPreview.textContent = `HP: ${hp}`;
+      alignmentPreview.textContent = alignment;
+      backstoryPreview.textContent = backstory;
+    });
+
+    // Handle form submit, save character, redirect back
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const data = new FormData(form);
+
+      const newChar = {
+        name: data.get('name').trim(),
+        class: data.get('class').trim(),
+        level: Number(data.get('level')),
+        hp: Number(data.get('hp')),
+        alignment: data.get('alignment').trim(),
+        backstory: data.get('backstory').trim(),
+        avatar: data.get('avatar').trim() || '👤'
+      };
+
+      // Get stored characters
+      const stored = localStorage.getItem('characters');
+      const characters = stored ? JSON.parse(stored) : [];
+
+      characters.push(newChar);
+
+      localStorage.setItem('characters', JSON.stringify(characters));
+
+      // Redirect back to dashboard
+      window.location.href = 'index.html';
+    });
+  </script>
+</body>
+</html>
