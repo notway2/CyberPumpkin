@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=10, user-scalable=yes" />
   <title>CyberPumpkin Night City Map</title>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -50,12 +50,14 @@
       };
 
       zones.forEach(zone => {
-        zone.addEventListener("click", () => {
-          if (activeZone) activeZone.classList.remove("active");
-          zone.classList.add("active");
-          activeZone = zone;
+        zone.addEventListener("click", (event) => {
+          event.stopPropagation();
 
-          const id = zone.id;
+          if (activeZone) activeZone.classList.remove("active");
+          event.currentTarget.classList.add("active");
+          activeZone = event.currentTarget;
+
+          const id = event.currentTarget.id;
           const data = zoneData[id];
           if (data) {
             zoneName.textContent = data.name;
