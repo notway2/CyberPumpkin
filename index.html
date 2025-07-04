@@ -2,99 +2,82 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Cyberpunk Map (Vanilla Zoom/Pan)</title>
-  <link rel="stylesheet" href="style.css"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CyberPumpkin Night City Map</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="controls">
-    <button onclick="zoom(1.2)">+</button>
-    <button onclick="zoom(0.8)">-</button>
-    <button onclick="resetView()">Reset</button>
-  </div>
-  <div class="map-frame">
-    <div class="map-inner" id="map-inner">
-      <img src="night-city-map.jpg" class="map-bg" alt="Night City Map"/>
-      <!-- POIs: adjust left/top % for desired locations -->
-      <div class="zone" style="left:42%;top:28%;" data-name="Maelstrom"></div>
-      <div class="zone" style="left:60%;top:20%;" data-name="Tyger Claws"></div>
-      <div class="zone" style="left:50%;top:55%;" data-name="6th Street"></div>
-      <div class="zone" style="left:65%;top:65%;" data-name="Voodoo Boys"></div>
-      <div class="zone" style="left:40%;top:80%;" data-name="Moxes"></div>
+  <div id="app">
+    <div id="map-container">
+      <!-- SVG with background image and interactive zones -->
+      <svg id="night-city-map" viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg" >
+        <image href="night-city-map.jpg" width="1000" height="600" />
+        <!-- Zones as polygons -->
+        <polygon id="watson" class="zone" points="150,100 300,120 280,250 160,230" />
+        <polygon id="pacifica" class="zone" points="700,350 850,340 840,480 720,460" />
+        <polygon id="city-center" class="zone" points="450,150 600,140 620,300 460,310" />
+      </svg>
     </div>
+    <aside id="sidebar">
+      <h2 id="zone-name">Select a Zone</h2>
+      <p id="zone-description">Tap a district on the map to see info here.</p>
+    </aside>
   </div>
-  <div class="popup" id="popup">
-    <span id="popup-title"></span>
-    <button onclick="closePopup()" class="close-btn">×</button>
-  </div>
+
+  <!-- svg-pan-zoom library from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+
   <script>
-    // Simple transform state
-    let scale = 1, originX = 0, originY = 0, isDragging = false, startX, startY;
-    const map = document.getElementById('map-inner');
-    const mapFrame = document.querySelector('.map-frame');
-    function applyTransform() {
-      map.style.transform = `translate(${originX}px,${originY}px) scale(${scale})`;
-    }
-    function zoom(factor) {
-      scale *= factor;
-      scale = Math.max(0.5, Math.min(scale, 4));
-      applyTransform();
-    }
-    function resetView() {
-      scale = 1; originX = 0; originY = 0;
-      applyTransform();
-    }
-    // Mouse drag
-    mapFrame.addEventListener('mousedown', e => {
-      isDragging = true; 
-      startX = e.clientX - originX; startY = e.clientY - originY;
-      mapFrame.style.cursor = "grabbing";
-    });
-    window.addEventListener('mousemove', e => {
-      if (!isDragging) return;
-      originX = e.clientX - startX;
-      originY = e.clientY - startY;
-      applyTransform();
-    });
-    window.addEventListener('mouseup', () => { 
-      isDragging = false; 
-      mapFrame.style.cursor = "grab";
-    });
-    // Touch events for mobile
-    mapFrame.addEventListener('touchstart', function(e){
-      if(e.touches.length === 1){
-        isDragging = true; 
-        startX = e.touches[0].clientX - originX; 
-        startY = e.touches[0].clientY - originY;
-      }
-    });
-    mapFrame.addEventListener('touchmove', function(e){
-      if(isDragging && e.touches.length === 1){
-        originX = e.touches[0].clientX - startX;
-        originY = e.touches[0].clientY - startY;
-        applyTransform();
-      }
-    });
-    mapFrame.addEventListener('touchend', function(){ isDragging = false; });
-    // Wheel zoom (desktop)
-    mapFrame.addEventListener('wheel', function(e){
-      e.preventDefault();
-      let factor = e.deltaY < 0 ? 1.1 : 0.9;
-      zoom(factor);
-    }, {passive:false});
-    // POI Popups
-    document.querySelectorAll('.zone').forEach(zone => {
-      zone.addEventListener('click', e => {
-        const popup = document.getElementById('popup');
-        document.getElementById('popup-title').textContent = zone.dataset.name;
-        popup.style.display = 'block';
+    document.addEventListener("DOMContentLoaded", () => {
+      const zones = document.querySelectorAll(".zone");
+      const zoneName = document.getElementById("zone-name");
+      const zoneDescription = document.getElementById("zone-description");
+      let activeZone = null;
+
+      const zoneData = {
+        watson: {
+          name: "Watson",
+          description: "A formerly prosperous corporate zone, now full of immigrants, fixers, and gang activity."
+        },
+        pacifica: {
+          name: "Pacifica",
+          description: "Originally a luxury development project, now largely abandoned and ruled by the Voodoo Boys."
+        },
+        "city-center": {
+          name: "City Center",
+          description: "The corporate heart of Night City, filled with megatowers, high-end security, and executive dealings."
+        }
+      };
+
+      zones.forEach(zone => {
+        zone.addEventListener("click", () => {
+          if (activeZone) activeZone.classList.remove("active");
+          zone.classList.add("active");
+          activeZone = zone;
+
+          const id = zone.id;
+          const data = zoneData[id];
+          if (data) {
+            zoneName.textContent = data.name;
+            zoneDescription.textContent = data.description;
+          } else {
+            zoneName.textContent = "Unknown Zone";
+            zoneDescription.textContent = "No information available.";
+          }
+        });
+      });
+
+      svgPanZoom("#night-city-map", {
+        zoomEnabled: true,
+        controlIconsEnabled: false,
+        fit: true,
+        center: true,
+        minZoom: 0.5,
+        maxZoom: 10,
+        dblClickZoomEnabled: false,
+        contain: true
       });
     });
-    function closePopup() {
-      document.getElementById('popup').style.display = 'none';
-    }
-    // Initial state
-    resetView();
   </script>
 </body>
 </html>
