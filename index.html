@@ -1,119 +1,47 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Cyberpunk Night City Map</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Party Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="map-container">
-    <svg
-      id="night-city-map"
-      viewBox="0 0 800 600"
-      xmlns="http://www.w3.org/2000/svg"
-      >
-      <!-- Zones -->
-      <path
-        id="zone1"
-        class="zone"
-        d="M50 50 L350 50 L350 250 L50 250 Z"
-      />
-      <path
-        id="zone2"
-        class="zone"
-        d="M370 50 L750 50 L750 250 L370 250 Z"
-      />
-      <path
-        id="zone3"
-        class="zone"
-        d="M50 270 L350 270 L350 550 L50 550 Z"
-      />
-      <path
-        id="zone4"
-        class="zone"
-        d="M370 270 L750 270 L750 550 L370 550 Z"
-      />
-      <circle
-        id="zone5"
-        class="zone"
-        cx="400"
-        cy="300"
-        r="60"
-      />
-    </svg>
+  <div class="container">
+    <header>
+      <h1>🛡️ Party Dashboard</h1>
+      <p class="subheading">Track your heroes & record the journey</p>
+    </header>
+
+    <section class="party-section">
+      <h2>Party Members</h2>
+      <div class="party-grid">
+        <!-- Party Member Card Example -->
+        <div class="party-card">
+          <div class="avatar">🧙</div>
+          <div class="info">
+            <h3>Elara</h3>
+            <p>Level 3 Wizard</p>
+            <p>HP: 14 / 24</p>
+          </div>
+        </div>
+
+        <div class="party-card">
+          <div class="avatar">🗡️</div>
+          <div class="info">
+            <h3>Thorne</h3>
+            <p>Level 3 Rogue</p>
+            <p>HP: 18 / 18</p>
+          </div>
+        </div>
+        <!-- Add more .party-card as needed -->
+      </div>
+    </section>
+
+    <section class="log-section">
+      <h2>📜 Session Notes</h2>
+      <textarea placeholder="Write session notes here..."></textarea>
+    </section>
   </div>
-  <div id="sidebar">
-    <h2>Zone Information</h2>
-    <div id="zone-info">
-      <p class="placeholder">Click a zone on the map to see details here.</p>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
-  <script>
-    window.addEventListener('load', () => {
-      const zoneData = {
-        zone1: {
-          name: "Watson District",
-          description:
-            "The gritty heart of Night City, full of black markets and megacorp secrets.",
-        },
-        zone2: {
-          name: "Westbrook",
-          description:
-            "Luxury and decadence meet danger in this high-class district.",
-        },
-        zone3: {
-          name: "Santo Domingo",
-          description: "Industrial zone with factories and power plants.",
-        },
-        zone4: {
-          name: "Heywood",
-          description:
-            "A suburban district with a mix of middle class and gang activity.",
-        },
-        zone5: {
-          name: "City Center",
-          description:
-            "The bustling core of Night City — corporate HQs and high rises.",
-        },
-      };
-
-      const svg = document.getElementById("night-city-map");
-      const infoDiv = document.getElementById("zone-info");
-      let activeZone = null;
-
-      function onZoneClick(e) {
-        if (activeZone) activeZone.classList.remove("active");
-        activeZone = e.target;
-        activeZone.classList.add("active");
-
-        const id = activeZone.id;
-        const data = zoneData[id];
-        if (data) {
-          infoDiv.innerHTML = `<h3>${data.name}</h3><p>${data.description}</p>`;
-        } else {
-          infoDiv.innerHTML = `<p>No information available.</p>`;
-        }
-      }
-
-      svg.querySelectorAll(".zone").forEach((zone) => {
-        zone.addEventListener("click", onZoneClick);
-      });
-
-      svgPanZoom(svg, {
-        zoomEnabled: true,
-        controlIconsEnabled: true,
-        fit: true,
-        center: true,
-        minZoom: 0.5,
-        maxZoom: 8,
-        zoomScaleSensitivity: 0.3,
-        panEnabled: true,
-        dblClickZoomEnabled: false,
-      });
-    });
-  </script>
 </body>
 </html>
