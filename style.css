@@ -20,6 +20,7 @@ html, body {
   position: relative;
   background: #000;
   border-right: 2px solid #ff00cc;
+  touch-action: none;  /* enable touch gestures */
 }
 
 svg#night-city-map {
