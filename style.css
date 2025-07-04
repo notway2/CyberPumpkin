@@ -27,6 +27,8 @@ svg#night-city-map {
   height: 100%;
   display: block;
   user-select: none;
+  touch-action: none;           /* enable pinch zoom on mobile */
+  -webkit-tap-highlight-color: transparent; /* remove tap highlight */
 }
 
 /* Zone polygons */
@@ -36,6 +38,7 @@ svg#night-city-map {
   stroke-width: 2;
   cursor: pointer;
   transition: stroke 0.3s ease;
+  pointer-events: all;          /* ensure zones respond to clicks/taps */
 }
 
 .zone:hover {
