@@ -1,170 +1,137 @@
-/* Reset */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Party Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🛡️ Party Dashboard</h1>
+      <p class="subheading">Track your heroes & record the journey</p>
+    </header>
 
-body {
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #1e1e2f;
-  color: #eaeaea;
-  padding: 1rem;
-}
+    <section class="party-section">
+      <div class="party-header">
+        <h2>Party Members</h2>
+        <div class="settings">
+          <button id="settingsBtn">⚙️</button>
+          <div id="settingsMenu" class="dropdown hidden">
+            <button onclick="openCreateModal()">➕ Create Character</button>
+          </div>
+        </div>
+      </div>
 
-.container {
-  max-width: 800px;
-  margin: auto;
-}
+      <div class="party-grid" id="partyGrid">
+        <!-- Characters will be inserted here -->
+      </div>
+    </section>
 
-/* Header */
-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
+    <section class="log-section">
+      <h2>📜 Session Notes</h2>
+      <textarea placeholder="Write session notes here..."></textarea>
+    </section>
+  </div>
 
-.subheading {
-  color: #bbb;
-  font-size: 1rem;
-}
+  <!-- Modal for character creation -->
+  <div class="modal hidden" id="characterModal">
+    <div class="modal-content">
+      <h3 id="modalTitle">Create Character</h3>
+      <label>Name:
+        <input type="text" id="charName" />
+      </label>
+      <label>Class:
+        <input type="text" id="charClass" />
+      </label>
+      <label>Level:
+        <input type="number" id="charLevel" min="1" value="1" />
+      </label>
+      <label>HP:
+        <input type="number" id="charHP" min="1" value="10" />
+      </label>
+      <button onclick="saveCharacter()">Save</button>
+      <button onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
 
-/* Party Section */
-.party-section {
-  margin-bottom: 2rem;
-}
+  <script>
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsMenu = document.getElementById('settingsMenu');
+    const partyGrid = document.getElementById('partyGrid');
 
-.party-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+    const characterModal = document.getElementById('characterModal');
+    const charName = document.getElementById('charName');
+    const charClass = document.getElementById('charClass');
+    const charLevel = document.getElementById('charLevel');
+    const charHP = document.getElementById('charHP');
 
-.settings {
-  position: relative;
-}
+    let characters = [];
 
-#settingsBtn {
-  background: none;
-  border: none;
-  color: #eaeaea;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
+    settingsBtn.addEventListener('click', () => {
+      settingsMenu.classList.toggle('hidden');
+    });
 
-.dropdown {
-  position: absolute;
-  right: 0;
-  top: 2rem;
-  background: #333;
-  border-radius: 6px;
-  padding: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  z-index: 10;
-}
+    function openCreateModal() {
+      document.getElementById('modalTitle').textContent = 'Create Character';
+      charName.value = '';
+      charClass.value = '';
+      charLevel.value = 1;
+      charHP.value = 10;
+      characterModal.classList.remove('hidden');
+      settingsMenu.classList.add('hidden');
+    }
 
-.dropdown button {
-  background: none;
-  border: none;
-  color: #fff;
-  text-align: left;
-  cursor: pointer;
-  padding: 0.25rem 0.5rem;
-}
+    function closeModal() {
+      characterModal.classList.add('hidden');
+    }
 
-.dropdown button:hover {
-  background-color: #444;
-}
+    function saveCharacter() {
+      const newChar = {
+        name: charName.value,
+        class: charClass.value,
+        level: parseInt(charLevel.value),
+        hp: parseInt(charHP.value)
+      };
+      characters.push(newChar);
+      renderCharacters();
+      closeModal();
+    }
 
-.hidden {
-  display: none;
-}
+    function renderCharacters() {
+      partyGrid.innerHTML = '';
+      characters.forEach(char => {
+        const card = document.createElement('div');
+        card.className = 'party-card';
 
-.party-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 1rem;
-  margin-top: 1rem;
-}
+        const avatar = document.createElement('div');
+        avatar.className = 'avatar';
+        avatar.textContent = getAvatar(char.class);
 
-.party-card {
-  background: #2e2e4f;
-  border-radius: 10px;
-  padding: 1rem;
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-  transition: transform 0.2s ease;
-}
+        const info = document.createElement('div');
+        info.className = 'info';
+        info.innerHTML = `
+          <h3>${char.name}</h3>
+          <p>Level ${char.level} ${char.class}</p>
+          <p>HP: ${char.hp}</p>
+        `;
 
-.party-card:hover {
-  transform: scale(1.02);
-}
+        card.appendChild(avatar);
+        card.appendChild(info);
+        partyGrid.appendChild(card);
+      });
+    }
 
-.avatar {
-  font-size: 2rem;
-}
-
-.info h3 {
-  margin-bottom: 0.25rem;
-  font-size: 1.2rem;
-}
-
-/* Session Log */
-.log-section textarea {
-  width: 100%;
-  min-height: 200px;
-  background: #2e2e4f;
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  padding: 1rem;
-  font-size: 1rem;
-  resize: vertical;
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
-}
-
-textarea::placeholder {
-  color: #aaa;
-}
-
-/* Modal */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-content {
-  background: #2e2e4f;
-  padding: 2rem;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 90%;
-  max-width: 400px;
-}
-
-.modal-content label {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.9rem;
-  color: #ccc;
-}
-
-.modal-content input {
-  margin-top: 0.25rem;
-  padding: 0.5rem;
-  background: #444;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-}
+    function getAvatar(className) {
+      const cls = className.toLowerCase();
+      if (cls.includes('wizard') || cls.includes('mage')) return '🧙';
+      if (cls.includes('rogue') || cls.includes('thief')) return '🗡️';
+      if (cls.includes('cleric') || cls.includes('priest')) return '⛪';
+      if (cls.includes('warrior') || cls.includes('fighter')) return '🛡️';
+      if (cls.includes('ranger') || cls.includes('archer')) return '🏹';
+      return '🧝'; // default
+    }
+  </script>
+</body>
+</html>
