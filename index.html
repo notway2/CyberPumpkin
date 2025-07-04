@@ -3,87 +3,170 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=10, user-scalable=yes" />
-  <title>CyberPumpkin Night City Map</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>CyberPumpkin Map (Canvas)</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #0a0a0a;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #info-bar {
+      background-color: #1a1a1a;
+      padding: 15px 20px;
+      border-bottom: 2px solid #ff00cc;
+      z-index: 10;
+    }
+
+    #info-bar h2 {
+      color: #ff00cc;
+      font-size: 1.2rem;
+      margin: 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    #info-bar p {
+      margin-top: 4px;
+      font-size: 0.95rem;
+      color: #ccc;
+    }
+
+    #game-canvas {
+      flex-grow: 1;
+      display: block;
+      width: 100%;
+    }
+
+    canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+  </style>
 </head>
 <body>
-  <div id="app">
-    <div id="map-container">
-      <!-- SVG with background image and interactive zones -->
-      <svg id="night-city-map" viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg" >
-        <image href="night-city-map.jpg" width="1000" height="600" />
-        <!-- Zones as polygons -->
-        <polygon id="watson" class="zone" points="150,100 300,120 280,250 160,230" />
-        <polygon id="pacifica" class="zone" points="700,350 850,340 840,480 720,460" />
-        <polygon id="city-center" class="zone" points="450,150 600,140 620,300 460,310" />
-      </svg>
-    </div>
-    <aside id="sidebar">
-      <h2 id="zone-name">Select a Zone</h2>
-      <p id="zone-description">Tap a district on the map to see info here.</p>
-    </aside>
+  <div id="info-bar">
+    <h2 id="zone-name">Tap a Zone</h2>
+    <p id="zone-description">Select an area to view its description.</p>
   </div>
+  <div id="game-canvas"></div>
 
-  <!-- svg-pan-zoom library from CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
-
+  <script src="https://cdn.jsdelivr.net/npm/pixi.js@7.x/dist/pixi.min.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const zones = document.querySelectorAll(".zone");
-      const zoneName = document.getElementById("zone-name");
-      const zoneDescription = document.getElementById("zone-description");
-      let activeZone = null;
+    const app = new PIXI.Application({
+      resizeTo: window,
+      backgroundColor: 0x0a0a0a,
+      antialias: true
+    });
+    document.getElementById('game-canvas').appendChild(app.view);
 
-      const zoneData = {
-        watson: {
-          name: "Watson",
-          description: "A formerly prosperous corporate zone, now full of immigrants, fixers, and gang activity."
-        },
-        pacifica: {
-          name: "Pacifica",
-          description: "Originally a luxury development project, now largely abandoned and ruled by the Voodoo Boys."
-        },
-        "city-center": {
-          name: "City Center",
-          description: "The corporate heart of Night City, filled with megatowers, high-end security, and executive dealings."
-        }
-      };
+    const zoneData = {
+      watson: {
+        name: "Watson",
+        description: "A formerly prosperous corporate zone, now full of immigrants, fixers, and gang activity."
+      },
+      pacifica: {
+        name: "Pacifica",
+        description: "Originally a luxury development project, now largely abandoned and ruled by the Voodoo Boys."
+      },
+      "city-center": {
+        name: "City Center",
+        description: "The corporate heart of Night City, filled with megatowers, high-end security, and executive dealings."
+      }
+    };
 
-      zones.forEach(zone => {
-        zone.addEventListener("click", (event) => {
-          event.stopPropagation();
+    const zoneName = document.getElementById("zone-name");
+    const zoneDesc = document.getElementById("zone-description");
 
-          if (activeZone) activeZone.classList.remove("active");
-          event.currentTarget.classList.add("active");
-          activeZone = event.currentTarget;
+    // Load the map image
+    PIXI.Assets.add('map', 'night-city-map.jpg');
+    PIXI.Assets.load('map').then((texture) => {
+      const container = new PIXI.Container();
+      app.stage.addChild(container);
 
-          const id = event.currentTarget.id;
+      const map = new PIXI.Sprite(texture);
+      container.addChild(map);
+
+      map.anchor.set(0);
+      map.x = 0;
+      map.y = 0;
+
+      container.scale.set(1);
+      container.interactive = true;
+      container.interactiveChildren = true;
+
+      // Create tappable hit areas (you can adjust coords later)
+      const makeZone = (id, points, color = 0xff00cc) => {
+        const zone = new PIXI.Graphics();
+        zone.lineStyle(2, color);
+        zone.beginFill(color, 0.1);
+        zone.drawPolygon(points);
+        zone.endFill();
+        zone.eventMode = 'static';
+        zone.cursor = 'pointer';
+        zone.on('pointertap', () => {
           const data = zoneData[id];
           if (data) {
             zoneName.textContent = data.name;
-            zoneDescription.textContent = data.description;
-          } else {
-            zoneName.textContent = "Unknown Zone";
-            zoneDescription.textContent = "No information available.";
+            zoneDesc.textContent = data.description;
           }
         });
+        container.addChild(zone);
+      };
+
+      // Sample rough polygon zones (replace with accurate coords later)
+      makeZone("watson", [200, 100, 350, 120, 330, 250, 210, 230]);
+      makeZone("pacifica", [700, 400, 850, 380, 830, 520, 710, 510]);
+      makeZone("city-center", [450, 150, 600, 140, 620, 300, 460, 310]);
+
+      // Add zoom/pan
+      let dragging = false;
+      let lastPos = null;
+      let scale = 1;
+
+      app.view.addEventListener("wheel", (e) => {
+        const direction = e.deltaY > 0 ? -1 : 1;
+        const factor = 0.1;
+        const newScale = Math.min(Math.max(0.5, scale + direction * factor), 5);
+        const mousePos = app.renderer.plugins.interaction.mouse.global;
+
+        const worldPos = {
+          x: (mousePos.x - container.x) / container.scale.x,
+          y: (mousePos.y - container.y) / container.scale.y,
+        };
+
+        container.scale.set(newScale);
+        container.x = mousePos.x - worldPos.x * newScale;
+        container.y = mousePos.y - worldPos.y * newScale;
+        scale = newScale;
       });
 
-      svgPanZoom("#night-city-map", {
-        zoomEnabled: true,
-        controlIconsEnabled: false,
-        fit: false,
-        center: false,
-        minZoom: 0.5,
-        maxZoom: 10,
-        dblClickZoomEnabled: false,
-        contain: true,
-        eventsListenerElement: document.getElementById('map-container'),
-        onInitialized: function(api) {
-          api.zoom(1.8);
-          api.center();
-        }
+      app.view.addEventListener("pointerdown", (e) => {
+        dragging = true;
+        lastPos = { x: e.clientX, y: e.clientY };
       });
+
+      app.view.addEventListener("pointermove", (e) => {
+        if (!dragging) return;
+        const dx = e.clientX - lastPos.x;
+        const dy = e.clientY - lastPos.y;
+        container.x += dx;
+        container.y += dy;
+        lastPos = { x: e.clientX, y: e.clientY };
+      });
+
+      app.view.addEventListener("pointerup", () => dragging = false);
+      app.view.addEventListener("pointerupoutside", () => dragging = false);
     });
   </script>
 </body>
