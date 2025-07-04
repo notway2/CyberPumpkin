@@ -1,3 +1,4 @@
+/* Reset & Base */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -16,7 +17,7 @@ body {
   margin: auto;
 }
 
-/* Welcome Page */
+/* Welcome Page Styles */
 .welcome-container {
   display: flex;
   flex-direction: column;
@@ -68,7 +69,7 @@ body {
   display: none;
 }
 
-/* Dashboard Styles */
+/* Dashboard Layout */
 header {
   text-align: center;
   margin-bottom: 2rem;
@@ -168,6 +169,7 @@ details p {
   color: #aaa;
 }
 
+/* Session Notes */
 .log-section textarea {
   width: 100%;
   min-height: 200px;
@@ -182,72 +184,4 @@ details p {
 
 textarea::placeholder {
   color: #aaa;
-}
-
-/* Modal */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-}
-
-.modal-content {
-  background: #2e2e4f;
-  padding: 2rem;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 90%;
-  max-width: 400px;
-  position: relative;
-}
-
-.modal-content label {
-  display: flex;
-  flex-direction: column;
-  font-size: 0.9rem;
-  color: #ccc;
-}
-
-.modal-content input,
-.modal-content textarea {
-  margin-top: 0.25rem;
-  padding: 0.5rem;
-  background: #444;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.modal-actions button {
-  flex: 1;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  color: #ccc;
-  font-size: 1.2rem;
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  cursor: pointer;
-}
-
-.close-btn:hover {
-  color: #fff;
 }
