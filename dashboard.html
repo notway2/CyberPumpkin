@@ -6,6 +6,7 @@
   <title>Party Dashboard</title>
   <link rel="stylesheet" href="style.css" />
   <script>
+    // Redirect if not logged in via welcome screen
     if (sessionStorage.getItem('authenticated') !== 'true') {
       window.location.href = 'index.html';
     }
@@ -38,11 +39,12 @@
     </section>
   </div>
 
-  <!-- Modal -->
+  <!-- Modal (starts hidden!) -->
   <div class="modal hidden" id="characterModal">
     <div class="modal-content">
       <button class="close-btn" id="closeModalBtn">✖</button>
       <h3 id="modalTitle">Create Character</h3>
+
       <label>Name:
         <input type="text" id="charName" />
       </label>
@@ -64,6 +66,7 @@
       <label>Custom Avatar (emoji):
         <input type="text" id="charAvatar" maxlength="2" />
       </label>
+
       <div class="modal-actions">
         <button id="saveCharacterBtn">Save</button>
         <button id="cancelCharacterBtn">Cancel</button>
@@ -93,21 +96,30 @@
       const partyGrid = document.getElementById('partyGrid');
       let characters = [];
 
+      // Toggle dropdown menu
       settingsBtn.addEventListener('click', () => {
         settingsMenu.classList.toggle('hidden');
       });
 
+      // Open character creator
       createBtn.addEventListener('click', () => {
-        openModal();
+        modal.classList.remove('hidden');
+        clearForm();
         settingsMenu.classList.add('hidden');
       });
 
-      closeModalBtn.addEventListener('click', closeModal);
-      cancelBtn.addEventListener('click', closeModal);
+      // Close modal
+      closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
+      cancelBtn.addEventListener('click', () => modal.classList.add('hidden'));
+
+      // Close modal by clicking outside the content
       window.addEventListener('click', e => {
-        if (e.target === modal) closeModal();
+        if (e.target === modal) {
+          modal.classList.add('hidden');
+        }
       });
 
+      // Save character
       saveBtn.addEventListener('click', () => {
         const char = {
           name: charName.value,
@@ -118,20 +130,12 @@
           backstory: charBackstory.value,
           avatar: charAvatar.value || getAvatar(charClass.value)
         };
+
         characters.push(char);
         renderCharacters();
-        closeModal();
-      });
-
-      function openModal() {
-        modal.classList.remove('hidden');
-        clearForm();
-      }
-
-      function closeModal() {
         modal.classList.add('hidden');
         clearForm();
-      }
+      });
 
       function clearForm() {
         charName.value = '';
