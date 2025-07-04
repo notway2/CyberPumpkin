@@ -70,12 +70,17 @@
       svgPanZoom("#night-city-map", {
         zoomEnabled: true,
         controlIconsEnabled: false,
-        fit: true,
-        center: true,
+        fit: false,
+        center: false,
         minZoom: 0.5,
         maxZoom: 10,
         dblClickZoomEnabled: false,
-        contain: true
+        contain: true,
+        eventsListenerElement: document.getElementById('map-container'),
+        onInitialized: function(api) {
+          api.zoom(1.8);
+          api.center();
+        }
       });
     });
   </script>
