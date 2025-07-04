@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Party Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <script>
+    if (sessionStorage.getItem('authenticated') !== 'true') {
+      window.location.href = 'index.html';
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🛡️ Party Dashboard</h1>
+      <p class="subheading">Track your heroes & record the journey</p>
+    </header>
+
+    <section class="party-section">
+      <div class="party-header">
+        <h2>Party Members</h2>
+        <div class="settings">
+          <button id="settingsBtn">⚙️</button>
+          <div id="settingsMenu" class="dropdown hidden">
+            <button id="createCharacterBtn">➕ Create Character</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="party-grid" id="partyGrid"></div>
+    </section>
+
+    <section class="log-section">
+      <h2>📜 Session Notes</h2>
+      <textarea placeholder="Write session notes here..."></textarea>
+    </section>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal hidden" id="characterModal">
+    <div class="modal-content">
+      <button class="close-btn" id="closeModalBtn">✖</button>
+      <h3 id="modalTitle">Create Character</h3>
+      <label>Name:
+        <input type="text" id="charName" />
+      </label>
+      <label>Class:
+        <input type="text" id="charClass" />
+      </label>
+      <label>Level:
+        <input type="number" id="charLevel" min="1" value="1" />
+      </label>
+      <label>HP:
+        <input type="number" id="charHP" min="1" value="10" />
+      </label>
+      <label>Alignment:
+        <input type="text" id="charAlignment" />
+      </label>
+      <label>Backstory:
+        <textarea id="charBackstory" rows="4"></textarea>
+      </label>
+      <label>Custom Avatar (emoji):
+        <input type="text" id="charAvatar" maxlength="2" />
+      </label>
+      <div class="modal-actions">
+        <button id="saveCharacterBtn">Save</button>
+        <button id="cancelCharacterBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const settingsBtn = document.getElementById('settingsBtn');
+      const settingsMenu = document.getElementById('settingsMenu');
+      const createBtn = document.getElementById('createCharacterBtn');
+
+      const modal = document.getElementById('characterModal');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      const cancelBtn = document.getElementById('cancelCharacterBtn');
+      const saveBtn = document.getElementById('saveCharacterBtn');
+
+      const charName = document.getElementById('charName');
+      const charClass = document.getElementById('charClass');
+      const charLevel = document.getElementById('charLevel');
+      const charHP = document.getElementById('charHP');
+      const charAlignment = document.getElementById('charAlignment');
+      const charBackstory = document.getElementById('charBackstory');
+      const charAvatar = document.getElementById('charAvatar');
+
+      const partyGrid = document.getElementById('partyGrid');
+      let characters = [];
+
+      settingsBtn.addEventListener('click', () => {
+        settingsMenu.classList.toggle('hidden');
+      });
+
+      createBtn.addEventListener('click', () => {
+        openModal();
+        settingsMenu.classList.add('hidden');
+      });
+
+      closeModalBtn.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+      window.addEventListener('click', e => {
+        if (e.target === modal) closeModal();
+      });
+
+      saveBtn.addEventListener('click', () => {
+        const char = {
+          name: charName.value,
+          class: charClass.value,
+          level: parseInt(charLevel.value),
+          hp: parseInt(charHP.value),
+          alignment: charAlignment.value,
+          backstory: charBackstory.value,
+          avatar: charAvatar.value || getAvatar(charClass.value)
+        };
+        characters.push(char);
+        renderCharacters();
+        closeModal();
+      });
+
+      function openModal() {
+        modal.classList.remove('hidden');
+        clearForm();
+      }
+
+      function closeModal() {
+        modal.classList.add('hidden');
+        clearForm();
+      }
+
+      function clearForm() {
+        charName.value = '';
+        charClass.value = '';
+        charLevel.value = 1;
+        charHP.value = 10;
+        charAlignment.value = '';
+        charBackstory.value = '';
+        charAvatar.value = '';
+      }
+
+      function renderCharacters() {
+        partyGrid.innerHTML = '';
+        characters.forEach(char => {
+          const card = document.createElement('div');
+          card.className = 'party-card';
+
+          const avatar = document.createElement('div');
+          avatar.className = 'avatar';
+          avatar.textContent = char.avatar;
+
+          const info = document.createElement('div');
+          info.className = 'info';
+          info.innerHTML = `
+            <h3>${char.name}</h3>
+            <p>Level ${char.level} ${char.class}</p>
+            <p>HP: ${char.hp}</p>
+            <p><em>${char.alignment}</em></p>
+            <details><summary>Backstory</summary><p>${char.backstory}</p></details>
+          `;
+
+          card.appendChild(avatar);
+          card.appendChild(info);
+          partyGrid.appendChild(card);
+        });
+      }
+
+      function getAvatar(className) {
+        const cls = className.toLowerCase();
+        if (cls.includes('wizard')) return '🧙';
+        if (cls.includes('rogue')) return '🗡️';
+        if (cls.includes('cleric')) return '⛪';
+        if (cls.includes('warrior')) return '🛡️';
+        if (cls.includes('ranger')) return '🏹';
+        return '🧝';
+      }
+    });
+  </script>
+</body>
+</html>
