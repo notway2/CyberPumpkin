@@ -6,7 +6,6 @@
   <title>Party Dashboard</title>
   <link rel="stylesheet" href="style.css" />
   <script>
-    // Redirect if not logged in via welcome screen
     if (sessionStorage.getItem('authenticated') !== 'true') {
       window.location.href = 'index.html';
     }
@@ -25,7 +24,8 @@
         <div class="settings">
           <button id="settingsBtn">⚙️</button>
           <div id="settingsMenu" class="dropdown hidden">
-            <button id="createCharacterBtn">➕ Create Character</button>
+            <!-- Create Character removed -->
+            <p style="padding: 0.25rem 0.5rem; color: #aaa;">Coming Soon...</p>
           </div>
         </div>
       </div>
@@ -39,113 +39,30 @@
     </section>
   </div>
 
-  <!-- Modal (starts hidden!) -->
-  <div class="modal hidden" id="characterModal">
-    <div class="modal-content">
-      <button class="close-btn" id="closeModalBtn">✖</button>
-      <h3 id="modalTitle">Create Character</h3>
-
-      <label>Name:
-        <input type="text" id="charName" />
-      </label>
-      <label>Class:
-        <input type="text" id="charClass" />
-      </label>
-      <label>Level:
-        <input type="number" id="charLevel" min="1" value="1" />
-      </label>
-      <label>HP:
-        <input type="number" id="charHP" min="1" value="10" />
-      </label>
-      <label>Alignment:
-        <input type="text" id="charAlignment" />
-      </label>
-      <label>Backstory:
-        <textarea id="charBackstory" rows="4"></textarea>
-      </label>
-      <label>Custom Avatar (emoji):
-        <input type="text" id="charAvatar" maxlength="2" />
-      </label>
-
-      <div class="modal-actions">
-        <button id="saveCharacterBtn">Save</button>
-        <button id="cancelCharacterBtn">Cancel</button>
-      </div>
-    </div>
-  </div>
-
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const settingsBtn = document.getElementById('settingsBtn');
       const settingsMenu = document.getElementById('settingsMenu');
-      const createBtn = document.getElementById('createCharacterBtn');
-
-      const modal = document.getElementById('characterModal');
-      const closeModalBtn = document.getElementById('closeModalBtn');
-      const cancelBtn = document.getElementById('cancelCharacterBtn');
-      const saveBtn = document.getElementById('saveCharacterBtn');
-
-      const charName = document.getElementById('charName');
-      const charClass = document.getElementById('charClass');
-      const charLevel = document.getElementById('charLevel');
-      const charHP = document.getElementById('charHP');
-      const charAlignment = document.getElementById('charAlignment');
-      const charBackstory = document.getElementById('charBackstory');
-      const charAvatar = document.getElementById('charAvatar');
-
       const partyGrid = document.getElementById('partyGrid');
+
       let characters = [];
 
-      // Toggle dropdown menu
       settingsBtn.addEventListener('click', () => {
         settingsMenu.classList.toggle('hidden');
       });
 
-      // Open character creator
-      createBtn.addEventListener('click', () => {
-        modal.classList.remove('hidden');
-        clearForm();
-        settingsMenu.classList.add('hidden');
+      // TEMPORARY: Example character just for display
+      characters.push({
+        name: 'Nova',
+        class: 'Rogue',
+        level: 3,
+        hp: 22,
+        alignment: 'Chaotic Neutral',
+        backstory: 'Street thief turned netrunner.',
+        avatar: '🗡️'
       });
 
-      // Close modal
-      closeModalBtn.addEventListener('click', () => modal.classList.add('hidden'));
-      cancelBtn.addEventListener('click', () => modal.classList.add('hidden'));
-
-      // Close modal by clicking outside the content
-      window.addEventListener('click', e => {
-        if (e.target === modal) {
-          modal.classList.add('hidden');
-        }
-      });
-
-      // Save character
-      saveBtn.addEventListener('click', () => {
-        const char = {
-          name: charName.value,
-          class: charClass.value,
-          level: parseInt(charLevel.value),
-          hp: parseInt(charHP.value),
-          alignment: charAlignment.value,
-          backstory: charBackstory.value,
-          avatar: charAvatar.value || getAvatar(charClass.value)
-        };
-
-        characters.push(char);
-        renderCharacters();
-        modal.classList.add('hidden');
-        clearForm();
-      });
-
-      function clearForm() {
-        charName.value = '';
-        charClass.value = '';
-        charLevel.value = 1;
-        charHP.value = 10;
-        charAlignment.value = '';
-        charBackstory.value = '';
-        charAvatar.value = '';
-      }
+      renderCharacters();
 
       function renderCharacters() {
         partyGrid.innerHTML = '';
@@ -171,16 +88,6 @@
           card.appendChild(info);
           partyGrid.appendChild(card);
         });
-      }
-
-      function getAvatar(className) {
-        const cls = className.toLowerCase();
-        if (cls.includes('wizard')) return '🧙';
-        if (cls.includes('rogue')) return '🗡️';
-        if (cls.includes('cleric')) return '⛪';
-        if (cls.includes('warrior')) return '🛡️';
-        if (cls.includes('ranger')) return '🏹';
-        return '🧝';
       }
     });
   </script>
