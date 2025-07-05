@@ -3,201 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Party Dashboard</title>
+  <title>Modal Example</title>
   <link rel="stylesheet" href="style.css" />
-  <script>
-    if (sessionStorage.getItem('authenticated') !== 'true') {
-      window.location.href = 'index.html';
-    }
-  </script>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>🛡️ Party Dashboard</h1>
-      <p class="subheading">Track your heroes & record the journey</p>
-    </header>
 
-    <section class="party-section">
-      <div class="party-header">
-        <h2>Party Members</h2>
-        <div class="settings">
-          <button id="settingsBtn">⚙️</button>
-          <div id="settingsMenu" class="dropdown hidden">
-            <button id="createCharBtn">Create Character</button>
-            <button id="editCharBtn">Edit Character</button>
-            <button id="deleteCharBtn">Delete Character</button>
-          </div>
-        </div>
-      </div>
+  <button id="openModalBtn" aria-haspopup="dialog" aria-controls="modal" aria-expanded="false">
+    Open Modal
+  </button>
 
-      <div class="party-grid" id="partyGrid"></div>
-    </section>
+  <!-- Modal wrapper -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1" hidden>
+    <div class="modal-content" role="document">
 
-    <section class="log-section">
-      <h2>📜 Session Notes</h2>
-      <textarea placeholder="Write session notes here..."></textarea>
-    </section>
-  </div>
+      <header class="modal-header">
+        <h2 id="modalTitle">Modal Title</h2>
+        <button id="closeModalBtn" class="close-btn" aria-label="Close modal">&times;</button>
+      </header>
 
-  <!-- Modal -->
-  <div class="modal-overlay hidden" id="modalOverlay">
-    <div class="modal" id="modalContent">
-      <button class="modal-close" id="modalClose">&times;</button>
-      <h2 id="modalTitle">Edit Character</h2>
-      <form id="modalForm">
-        <label>
-          Select Character:
-          <select id="charSelect" required></select>
-        </label>
-        <div id="editFields" class="hidden">
-          <label>Name: <input type="text" id="editName" required /></label>
-          <label>Class: <input type="text" id="editClass" required /></label>
-          <label>Level: <input type="number" id="editLevel" min="1" max="20" required /></label>
-          <label>HP: <input type="number" id="editHp" min="1" required /></label>
-          <label>Alignment: <input type="text" id="editAlignment" required /></label>
-          <label>Backstory: <textarea id="editBackstory" required></textarea></label>
-          <label>Avatar: <input type="text" id="editAvatar" maxlength="2" required /></label>
-        </div>
-        <button type="submit" class="submit-btn" id="modalConfirmBtn">Confirm</button>
-      </form>
+      <main class="modal-body">
+        <p>This is the modal content. You can put anything here.</p>
+      </main>
+
+      <footer class="modal-footer">
+        <button id="cancelModalBtn">Cancel</button>
+        <button id="confirmModalBtn">Confirm</button>
+      </footer>
+
     </div>
   </div>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const settingsBtn = document.getElementById('settingsBtn');
-      const settingsMenu = document.getElementById('settingsMenu');
-      const createCharBtn = document.getElementById('createCharBtn');
-      const editCharBtn = document.getElementById('editCharBtn');
-      const deleteCharBtn = document.getElementById('deleteCharBtn');
-      const partyGrid = document.getElementById('partyGrid');
-
-      const modalOverlay = document.getElementById('modalOverlay');
-      const modalClose = document.getElementById('modalClose');
-      const modalForm = document.getElementById('modalForm');
-      const modalTitle = document.getElementById('modalTitle');
-      const charSelect = document.getElementById('charSelect');
-      const editFields = document.getElementById('editFields');
-      const modalConfirmBtn = document.getElementById('modalConfirmBtn');
-
-      let characters = JSON.parse(localStorage.getItem('characters')) || [];
-
-      function renderCharacters() {
-        partyGrid.innerHTML = '';
-        characters.forEach((char, index) => {
-          const card = document.createElement('div');
-          card.className = 'party-card';
-
-          const avatar = document.createElement('div');
-          avatar.className = 'avatar';
-          avatar.textContent = char.avatar;
-
-          const info = document.createElement('div');
-          info.className = 'info';
-          info.innerHTML = `
-            <h3>${char.name}</h3>
-            <p>Level ${char.level} ${char.class}</p>
-            <p>HP: ${char.hp}</p>
-            <p><em>${char.alignment}</em></p>
-            <details><summary>Backstory</summary><p>${char.backstory}</p></details>
-          `;
-
-          card.appendChild(avatar);
-          card.appendChild(info);
-          partyGrid.appendChild(card);
-        });
-      }
-
-      function toggleDropdown() {
-        settingsMenu.classList.toggle('hidden');
-      }
-
-      function closeDropdownOnClickOutside(event) {
-        if (!settingsMenu.contains(event.target) && !settingsBtn.contains(event.target)) {
-          settingsMenu.classList.add('hidden');
-        }
-      }
-
-      function openModal(mode) {
-        modalOverlay.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-
-        modalTitle.textContent = mode === 'edit' ? 'Edit Character' : 'Delete Character';
-        editFields.classList.toggle('hidden', mode === 'delete');
-        modalConfirmBtn.textContent = 'Confirm';
-
-        charSelect.innerHTML = '';
-        characters.forEach((char, index) => {
-          const option = document.createElement('option');
-          option.value = index;
-          option.textContent = `${char.name} (${char.class})`;
-          charSelect.appendChild(option);
-        });
-
-        if (mode === 'edit') {
-          fillEditFields(0);
-        }
-
-        modalForm.onsubmit = (e) => {
-          e.preventDefault();
-          const index = parseInt(charSelect.value);
-          if (mode === 'edit') {
-            characters[index] = {
-              name: document.getElementById('editName').value.trim(),
-              class: document.getElementById('editClass').value.trim(),
-              level: parseInt(document.getElementById('editLevel').value),
-              hp: parseInt(document.getElementById('editHp').value),
-              alignment: document.getElementById('editAlignment').value.trim(),
-              backstory: document.getElementById('editBackstory').value.trim(),
-              avatar: document.getElementById('editAvatar').value.trim()
-            };
-          } else if (mode === 'delete') {
-            characters.splice(index, 1);
-          }
-          localStorage.setItem('characters', JSON.stringify(characters));
-          closeModal();
-          renderCharacters();
-        };
-      }
-
-      function closeModal() {
-        modalOverlay.classList.add('hidden');
-        document.body.style.overflow = '';
-        modalForm.reset();
-      }
-
-      function fillEditFields(index) {
-        const char = characters[index];
-        document.getElementById('editName').value = char.name;
-        document.getElementById('editClass').value = char.class;
-        document.getElementById('editLevel').value = char.level;
-        document.getElementById('editHp').value = char.hp;
-        document.getElementById('editAlignment').value = char.alignment;
-        document.getElementById('editBackstory').value = char.backstory;
-        document.getElementById('editAvatar').value = char.avatar;
-      }
-
-      settingsBtn.addEventListener('click', toggleDropdown);
-      document.addEventListener('click', closeDropdownOnClickOutside);
-      createCharBtn.addEventListener('click', () => window.location.href = 'create-character.html');
-      editCharBtn.addEventListener('click', () => openModal('edit'));
-      deleteCharBtn.addEventListener('click', () => openModal('delete'));
-      charSelect.addEventListener('change', e => {
-        if (!editFields.classList.contains('hidden')) {
-          fillEditFields(e.target.value);
-        }
-      });
-      modalClose.addEventListener('click', closeModal);
-      modalOverlay.addEventListener('click', e => {
-        if (e.target === modalOverlay) closeModal();
-      });
-      document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeModal();
-      });
-
-      renderCharacters();
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
