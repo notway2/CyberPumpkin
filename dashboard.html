@@ -121,6 +121,8 @@
 
       function openModal(mode) {
         modalOverlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+
         modalTitle.textContent = mode === 'edit' ? 'Edit Character' : 'Delete Character';
         editFields.classList.toggle('hidden', mode === 'delete');
         modalConfirmBtn.textContent = 'Confirm';
@@ -154,9 +156,15 @@
             characters.splice(index, 1);
           }
           localStorage.setItem('characters', JSON.stringify(characters));
-          modalOverlay.classList.add('hidden');
+          closeModal();
           renderCharacters();
         };
+      }
+
+      function closeModal() {
+        modalOverlay.classList.add('hidden');
+        document.body.style.overflow = '';
+        modalForm.reset();
       }
 
       function fillEditFields(index) {
@@ -180,7 +188,13 @@
           fillEditFields(e.target.value);
         }
       });
-      modalClose.addEventListener('click', () => modalOverlay.classList.add('hidden'));
+      modalClose.addEventListener('click', closeModal);
+      modalOverlay.addEventListener('click', e => {
+        if (e.target === modalOverlay) closeModal();
+      });
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeModal();
+      });
 
       renderCharacters();
     });
