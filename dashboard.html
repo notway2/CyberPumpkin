@@ -25,8 +25,8 @@
           <button id="settingsBtn">⚙️</button>
           <div id="settingsMenu" class="dropdown hidden">
             <button id="createCharBtn">Create Character</button>
-            <button id="editCharBtn" disabled>Edit Character</button>
-            <button id="deleteCharBtn" disabled>Delete Character</button>
+            <button id="editCharBtn">Edit Character</button>
+            <button id="deleteCharBtn">Delete Character</button>
           </div>
         </div>
       </div>
@@ -40,45 +40,54 @@
     </section>
   </div>
 
+  <!-- Modal -->
+  <div class="modal-overlay hidden" id="modalOverlay">
+    <div class="modal" id="modalContent">
+      <button class="modal-close" id="modalClose">&times;</button>
+      <h2 id="modalTitle">Edit Character</h2>
+      <form id="modalForm">
+        <label>
+          Select Character:
+          <select id="charSelect" required></select>
+        </label>
+        <div id="editFields" class="hidden">
+          <label>Name: <input type="text" id="editName" required /></label>
+          <label>Class: <input type="text" id="editClass" required /></label>
+          <label>Level: <input type="number" id="editLevel" min="1" max="20" required /></label>
+          <label>HP: <input type="number" id="editHp" min="1" required /></label>
+          <label>Alignment: <input type="text" id="editAlignment" required /></label>
+          <label>Backstory: <textarea id="editBackstory" required></textarea></label>
+          <label>Avatar: <input type="text" id="editAvatar" maxlength="2" required /></label>
+        </div>
+        <button type="submit" class="submit-btn" id="modalConfirmBtn">Confirm</button>
+      </form>
+    </div>
+  </div>
+
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const settingsBtn = document.getElementById('settingsBtn');
       const settingsMenu = document.getElementById('settingsMenu');
       const createCharBtn = document.getElementById('createCharBtn');
+      const editCharBtn = document.getElementById('editCharBtn');
+      const deleteCharBtn = document.getElementById('deleteCharBtn');
       const partyGrid = document.getElementById('partyGrid');
 
-      settingsBtn.addEventListener('click', () => {
-        settingsMenu.classList.toggle('hidden');
-      });
+      const modalOverlay = document.getElementById('modalOverlay');
+      const modalClose = document.getElementById('modalClose');
+      const modalForm = document.getElementById('modalForm');
+      const modalTitle = document.getElementById('modalTitle');
+      const charSelect = document.getElementById('charSelect');
+      const editFields = document.getElementById('editFields');
+      const modalConfirmBtn = document.getElementById('modalConfirmBtn');
 
-      createCharBtn.addEventListener('click', () => {
-        window.location.href = 'create-character.html';
-      });
-
-      // Load characters from localStorage
-      let characters = [];
-      const stored = localStorage.getItem('characters');
-      if (stored) {
-        characters = JSON.parse(stored);
-      } else {
-        // Optional: default character
-        characters.push({
-          name: 'Nova',
-          class: 'Rogue',
-          level: 3,
-          hp: 22,
-          alignment: 'Chaotic Neutral',
-          backstory: 'Street thief turned netrunner.',
-          avatar: '🗡️'
-        });
-      }
+      let characters = JSON.parse(localStorage.getItem('characters')) || [];
 
       function renderCharacters() {
         partyGrid.innerHTML = '';
         characters.forEach((char, index) => {
           const card = document.createElement('div');
           card.className = 'party-card';
-          card.dataset.index = index;
 
           const avatar = document.createElement('div');
           avatar.className = 'avatar';
@@ -99,6 +108,79 @@
           partyGrid.appendChild(card);
         });
       }
+
+      function toggleDropdown() {
+        settingsMenu.classList.toggle('hidden');
+      }
+
+      function closeDropdownOnClickOutside(event) {
+        if (!settingsMenu.contains(event.target) && !settingsBtn.contains(event.target)) {
+          settingsMenu.classList.add('hidden');
+        }
+      }
+
+      function openModal(mode) {
+        modalOverlay.classList.remove('hidden');
+        modalTitle.textContent = mode === 'edit' ? 'Edit Character' : 'Delete Character';
+        editFields.classList.toggle('hidden', mode === 'delete');
+        modalConfirmBtn.textContent = 'Confirm';
+
+        charSelect.innerHTML = '';
+        characters.forEach((char, index) => {
+          const option = document.createElement('option');
+          option.value = index;
+          option.textContent = `${char.name} (${char.class})`;
+          charSelect.appendChild(option);
+        });
+
+        if (mode === 'edit') {
+          fillEditFields(0);
+        }
+
+        modalForm.onsubmit = (e) => {
+          e.preventDefault();
+          const index = parseInt(charSelect.value);
+          if (mode === 'edit') {
+            characters[index] = {
+              name: document.getElementById('editName').value.trim(),
+              class: document.getElementById('editClass').value.trim(),
+              level: parseInt(document.getElementById('editLevel').value),
+              hp: parseInt(document.getElementById('editHp').value),
+              alignment: document.getElementById('editAlignment').value.trim(),
+              backstory: document.getElementById('editBackstory').value.trim(),
+              avatar: document.getElementById('editAvatar').value.trim()
+            };
+          } else if (mode === 'delete') {
+            characters.splice(index, 1);
+          }
+          localStorage.setItem('characters', JSON.stringify(characters));
+          modalOverlay.classList.add('hidden');
+          renderCharacters();
+        };
+      }
+
+      function fillEditFields(index) {
+        const char = characters[index];
+        document.getElementById('editName').value = char.name;
+        document.getElementById('editClass').value = char.class;
+        document.getElementById('editLevel').value = char.level;
+        document.getElementById('editHp').value = char.hp;
+        document.getElementById('editAlignment').value = char.alignment;
+        document.getElementById('editBackstory').value = char.backstory;
+        document.getElementById('editAvatar').value = char.avatar;
+      }
+
+      settingsBtn.addEventListener('click', toggleDropdown);
+      document.addEventListener('click', closeDropdownOnClickOutside);
+      createCharBtn.addEventListener('click', () => window.location.href = 'create-character.html');
+      editCharBtn.addEventListener('click', () => openModal('edit'));
+      deleteCharBtn.addEventListener('click', () => openModal('delete'));
+      charSelect.addEventListener('change', e => {
+        if (!editFields.classList.contains('hidden')) {
+          fillEditFields(e.target.value);
+        }
+      });
+      modalClose.addEventListener('click', () => modalOverlay.classList.add('hidden'));
 
       renderCharacters();
     });
