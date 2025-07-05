@@ -1,19 +1,115 @@
-/* Basic reset */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+:root {
+  --neon-pink: #ff4d6d;
+  --neon-blue: #4dc6ff;
+  --neon-green: #33ff99;
+  --dark-bg: #0b0c10;
+  --dark-panel: #1f2833;
+  --text-light: #c5c6c7;
+  --text-muted: #66fcf1aa;
+  --border-glow: #45a29e;
+}
+
 * {
   box-sizing: border-box;
 }
 
 body {
-  font-family: Arial, sans-serif;
-  margin: 2rem;
-  background-color: #f0f0f0;
+  background: var(--dark-bg);
+  color: var(--text-light);
+  font-family: 'Share Tech Mono', monospace, monospace;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
 }
 
-/* Button to open modal */
-#openModalBtn {
-  padding: 0.5rem 1rem;
+header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: 2.5rem;
+  color: var(--neon-pink);
+  text-shadow:
+    0 0 8px var(--neon-pink),
+    0 0 15px var(--neon-pink);
+  margin-bottom: 0.5rem;
+}
+
+.cyber-btn {
+  background-color: transparent;
+  border: 2px solid var(--neon-pink);
+  color: var(--neon-pink);
+  padding: 0.6rem 1.2rem;
   font-size: 1.1rem;
   cursor: pointer;
+  border-radius: 5px;
+  text-transform: uppercase;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  box-shadow:
+    0 0 5px var(--neon-pink),
+    0 0 15px var(--neon-pink);
+}
+
+.cyber-btn:hover,
+.cyber-btn:focus {
+  background-color: var(--neon-pink);
+  color: var(--dark-bg);
+  outline: none;
+  box-shadow:
+    0 0 10px var(--neon-pink),
+    0 0 20px var(--neon-pink),
+    0 0 40px var(--neon-pink);
+}
+
+/* Main content */
+main {
+  width: 100%;
+  max-width: 600px;
+}
+
+#currentCharacters h2 {
+  border-bottom: 2px solid var(--neon-pink);
+  padding-bottom: 0.3rem;
+  margin-bottom: 1rem;
+  color: var(--neon-pink);
+}
+
+.characters-list {
+  background: var(--dark-panel);
+  border-radius: 8px;
+  min-height: 120px;
+  padding: 1rem;
+  box-shadow: inset 0 0 15px #45a29e66;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+/* Character card */
+.character-card {
+  background: #141a20;
+  border: 1px solid var(--neon-green);
+  border-radius: 6px;
+  padding: 0.7rem 1rem;
+  color: var(--neon-green);
+  box-shadow:
+    0 0 5px var(--neon-green);
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.character-card:hover {
+  background-color: #1f3326;
+  cursor: default;
 }
 
 /* Modal overlay */
@@ -23,18 +119,16 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(11, 12, 16, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Use opacity and pointer-events to animate/show */
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
-  z-index: 1000;
+  z-index: 9999;
 }
 
-/* Show modal when not hidden */
 .modal[hidden] {
   display: none;
 }
@@ -44,21 +138,26 @@ body {
   pointer-events: auto;
 }
 
-/* Modal content box */
+/* Modal content */
 .modal-content {
-  background: white;
+  background: #12151a;
+  border: 2px solid var(--neon-pink);
   border-radius: 8px;
-  max-width: 400px;
   width: 90%;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.3);
-  animation: slideDown 0.3s ease forwards;
+  max-width: 450px;
+  padding: 1rem 1.5rem;
+  box-shadow:
+    0 0 10px var(--neon-pink),
+    0 0 30px var(--neon-pink);
   outline: none;
+  animation: slideDown 0.3s ease forwards;
+  color: var(--text-light);
 }
 
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-25px);
+    transform: translateY(-30px);
   }
   to {
     opacity: 1;
@@ -66,54 +165,109 @@ body {
   }
 }
 
-/* Header */
 .modal-header {
-  padding: 1rem;
-  border-bottom: 1px solid #ddd;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 1rem;
 }
 
 .modal-header h2 {
   margin: 0;
+  color: var(--neon-pink);
+  text-shadow: 0 0 8px var(--neon-pink);
   font-size: 1.5rem;
 }
 
 .close-btn {
-  font-size: 1.5rem;
+  font-size: 2rem;
   background: none;
   border: none;
+  color: var(--neon-pink);
   cursor: pointer;
   line-height: 1;
-  color: #333;
+  transition: color 0.2s ease;
 }
 
-/* Body */
-.modal-body {
-  padding: 1rem;
+.close-btn:hover,
+.close-btn:focus {
+  color: var(--neon-green);
+  outline: none;
+  text-shadow: 0 0 10px var(--neon-green);
+}
+
+.modal-body form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.modal-body label {
+  font-weight: 700;
+  color: var(--neon-blue);
+  text-shadow: 0 0 8px var(--neon-blue);
+}
+
+.modal-body input[type="text"],
+.modal-body input[type="number"],
+.modal-body select,
+.modal-body textarea {
+  background-color: #1a1f26;
+  border: 1.5px solid var(--neon-pink);
+  border-radius: 5px;
+  padding: 0.5rem 0.7rem;
+  color: var(--text-light);
+  font-family: 'Share Tech Mono', monospace;
   font-size: 1rem;
-  color: #333;
+  transition: border-color 0.3s ease;
 }
 
-/* Footer */
+.modal-body input[type="text"]:focus,
+.modal-body input[type="number"]:focus,
+.modal-body select:focus,
+.modal-body textarea:focus {
+  border-color: var(--neon-green);
+  outline: none;
+  box-shadow: 0 0 8px var(--neon-green);
+}
+
 .modal-footer {
-  padding: 1rem;
-  border-top: 1px solid #ddd;
-  text-align: right;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
-.modal-footer button {
-  padding: 0.4rem 1rem;
-  margin-left: 0.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-  border: 1px solid #888;
-  border-radius: 4px;
-  background-color: #eee;
-  transition: background-color 0.2s ease;
+.cyber-btn.cancel {
+  border-color: var(--neon-blue);
+  color: var(--neon-blue);
+  box-shadow:
+    0 0 5px var(--neon-blue),
+    0 0 15px var(--neon-blue);
 }
 
-.modal-footer button:hover {
-  background-color: #ddd;
+.cyber-btn.cancel:hover,
+.cyber-btn.cancel:focus {
+  background-color: var(--neon-blue);
+  color: var(--dark-bg);
+  box-shadow:
+    0 0 12px var(--neon-blue),
+    0 0 25px var(--neon-blue);
+}
+
+.cyber-btn.submit {
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+  box-shadow:
+    0 0 5px var(--neon-green),
+    0 0 15px var(--neon-green);
+}
+
+.cyber-btn.submit:hover,
+.cyber-btn.submit:focus {
+  background-color: var(--neon-green);
+  color: var(--dark-bg);
+  box-shadow:
+    0 0 12px var(--neon-green),
+    0 0 25px var(--neon-green);
 }
