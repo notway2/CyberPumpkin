@@ -1,48 +1,50 @@
-// Get elements
+// Elements
 const openBtn = document.getElementById('openModalBtn');
 const modal = document.getElementById('modal');
 const closeBtn = document.getElementById('closeModalBtn');
 const cancelBtn = document.getElementById('cancelModalBtn');
-const confirmBtn = document.getElementById('confirmModalBtn');
+const form = document.getElementById('characterForm');
+const charactersList = document.getElementById('charactersList');
 
 let lastFocusedElement = null;
+let characters = [];
 
-// Function to open modal
+// Open modal function
 function openModal() {
   lastFocusedElement = document.activeElement;
   modal.hidden = false;
-  // Small timeout to trigger transition
   requestAnimationFrame(() => {
     modal.classList.add('show');
   });
   modal.setAttribute('aria-hidden', 'false');
   openBtn.setAttribute('aria-expanded', 'true');
 
-  // Focus modal content for accessibility
-  modal.querySelector('.modal-content').focus();
+  // Reset form on open
+  form.reset();
+  form.charClass.selectedIndex = 0;
 
-  // Trap focus inside modal
+  // Focus the first input for accessibility
+  form.charName.focus();
+
+  // Add keyboard trap and ESC listener
   document.addEventListener('keydown', trapTabKey);
-  // Close modal on ESC key
   document.addEventListener('keydown', onEscPress);
 }
 
-// Function to close modal
+// Close modal function
 function closeModal() {
   modal.classList.remove('show');
   modal.setAttribute('aria-hidden', 'true');
   openBtn.setAttribute('aria-expanded', 'false');
-  // Wait for transition to finish then hide
   modal.addEventListener('transitionend', onTransitionEnd);
-  // Remove event listeners
   document.removeEventListener('keydown', trapTabKey);
   document.removeEventListener('keydown', onEscPress);
 
-  // Return focus to last focused element
+  // Return focus
   if (lastFocusedElement) lastFocusedElement.focus();
 }
 
-// Hide modal after fade-out transition
+// After fade-out hide modal
 function onTransitionEnd(event) {
   if (event.propertyName === 'opacity' && !modal.classList.contains('show')) {
     modal.hidden = true;
@@ -50,7 +52,7 @@ function onTransitionEnd(event) {
   }
 }
 
-// Trap tab key inside modal for accessibility
+// Trap tab inside modal
 function trapTabKey(e) {
   if (e.key !== 'Tab') return;
 
@@ -61,13 +63,11 @@ function trapTabKey(e) {
   const lastElem = focusableElements[focusableElements.length - 1];
 
   if (e.shiftKey) {
-    // Shift + Tab
     if (document.activeElement === firstElem) {
       e.preventDefault();
       lastElem.focus();
     }
   } else {
-    // Tab
     if (document.activeElement === lastElem) {
       e.preventDefault();
       firstElem.focus();
@@ -75,26 +75,62 @@ function trapTabKey(e) {
   }
 }
 
-// Close modal on ESC key press
+// ESC key closes modal
 function onEscPress(e) {
   if (e.key === 'Escape' || e.key === 'Esc') {
     closeModal();
   }
 }
 
-// Click handlers
+// Add character to list and update UI
+function addCharacter(character) {
+  characters.push(character);
+  renderCharacters();
+}
+
+// Render character cards or no characters message
+function renderCharacters() {
+  if (characters.length === 0) {
+    charactersList.innerHTML = `<p>No characters yet. Create one!</p>`;
+    return;
+  }
+
+  charactersList.innerHTML = characters.map((char, idx) => `
+    <article class="character-card" tabindex="0" aria-label="Character ${char.name}, class ${char.class}, level ${char.level}">
+      <strong>${char.name}</strong> — <em>${char.class}</em> (Level ${char.level})
+      ${char.background ? `<p>${char.background}</p>` : ''}
+    </article>
+  `).join('');
+}
+
+// Handle form submission
+form.addEventListener('submit', e => {
+  e.preventDefault();
+
+  const character = {
+    name: form.charName.value.trim(),
+    class: form.charClass.value,
+    level: form.charLevel.value,
+    background: form.charBackground.value.trim(),
+  };
+
+  addCharacter(character);
+  closeModal();
+});
+
+// Event listeners for modal open/close
 openBtn.addEventListener('click', openModal);
 closeBtn.addEventListener('click', closeModal);
 cancelBtn.addEventListener('click', closeModal);
 
-// Clicking outside modal-content closes modal
+// Close modal on clicking outside modal content
 modal.addEventListener('click', (e) => {
   if (e.target === modal) {
     closeModal();
   }
 });
 
-// Prevent clicks inside modal content from bubbling to modal overlay
-modal.querySelector('.modal-content').addEventListener('click', (e) => {
+// Prevent modal content clicks from closing modal
+modal.querySelector('.modal-content').addEventListener('click', e => {
   e.stopPropagation();
 });
